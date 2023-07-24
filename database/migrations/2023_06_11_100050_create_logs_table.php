@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id');
             $table->foreignId('station_id');
+            $table->foreignId('station_programme_id')->nullable();
             $table->foreignId('language_id');
             $table->unsignedSmallInteger('frequency');
-            $table->dateTime('time');
+            $table->dateTime('datetime');
             $table->unsignedSmallInteger('quality');
             $table->mediumText('comment')->nullable();
         });

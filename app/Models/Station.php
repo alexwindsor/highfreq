@@ -30,4 +30,9 @@ class Station extends Model
         return $this->belongsTo(StationType::class);
     }
 
+    public function programmes(): HasMany
+    {
+        return $this->hasMany(StationProgramme::class);
+    }
+
 }

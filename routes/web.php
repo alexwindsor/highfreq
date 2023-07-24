@@ -22,16 +22,21 @@ Route::get('/logs', [LogController::class, 'index'])->middleware(['auth', 'verif
 Route::post('/logs', [LogController::class, 'store'])->middleware(['auth', 'verified']);
 Route::put('/logs/update/{log_id}', [LogController::class, 'update'])->middleware(['auth', 'verified']);
 Route::post('/logs/filter', [LogController::class, 'filter'])->middleware(['auth', 'verified']);
-Route::post('/logs/delete/{log_id}', [LogController::class, 'destroy'])->middleware(['auth', 'verified']);
+Route::delete('/logs/delete/{log_id}', [LogController::class, 'destroy'])->middleware(['auth', 'verified']);
+
 // shortWaveInfoData
 Route::get('/shortWaveInfoData', [SwInfoBroadcastController::class, 'index']);
-Route::post('/shortWaveInfoData', [SwInfoBroadcastController::class, 'filterBroadcasts'])->name('swiDataRip');
+Route::post('/shortWaveInfoData', [SwInfoBroadcastController::class, 'filterBroadcasts']);
 Route::post('/swiDataRip/checkfrequency', [SwInfoBroadcastController::class, 'checkFrequency'])->middleware(['auth', 'verified']);
+Route::post('/swiDataRip/getStationProgrammes', [SwInfoBroadcastController::class, 'getStationProgrammes'])->middleware(['auth', 'verified']);
 Route::get('/swiDataRip/rip', [SwInfoBroadcastController::class, 'rip']);
+
 // bands
 Route::post('/bands/changeBandZoom', [BandsController::class, 'changeBandZoom']);
 Route::get('/bands', [BandsController::class, 'index'])->name('bands');
 Route::post('/bands/getBand/{frequency}', [BandsController::class, 'getBand']);
+
+
 
 // login / logout
 Route::get('/login', function () {
@@ -62,27 +67,30 @@ Route::delete('/delete_account', [UserController::class, 'destroy'])->middleware
 
 // TO DO :
 
-// proper routes using put or delete where necessary, and duplicate on my breeze clone
+// sort out GIT and GITHUB !!!
 
 /*
-- sort out home page
-- optimize queries to only select the fields needed
+shortWaveInfoData:
+ - change pagination
+ - make time displayed live and update data half/hourly
 
-Bands page, 
-- make it so you can adjust start and end frequencies
+logs:
+ - pagination
+ - make order/group by filter
 
-Swinfo page
-- make the time displayed above the chart show live time
-- don't show top bar of graph if no broadcasts are found
-- try to fix the live time
+*check everything over that it is mobile friendly
 
-swinfo scraper
-- delete orphaned transmitters, languages and stations after a scrape
+***
+LARAVEL:
+ - have a look and optimise all the routes, controllers, models (sql statements) etc..
+ - unit tests, starting by cutting and pasting tests from the auth template
+ - make apis
+***
 
-logs
-- edit log
-- order by filter
-- try to fix the live time
-- pagination
+
+bands page !!! have fun...
+
 
 */
+
+

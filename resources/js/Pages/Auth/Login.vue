@@ -9,7 +9,7 @@ defineProps({
 })
 
 const form = reactive({
-    email: 'test@example.com',
+    email: 'alexwindsormusic@gmail.com',
     password: 'password'
 });
 

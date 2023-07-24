@@ -13,7 +13,7 @@ defineProps({
 <template>
   <main>
     <header class="border-b border-black py-3 sm:py-6 text-4xl sm:text-6xl lg:text-6xl text-center">
-      <Link :href="base_url">High Frequency Radio Logs</Link>
+      <Link :href="base_url" style="font-family: 'Cutive Mono', monospace;">High Frequency Radio Logs</Link>
     </header>
 
     <!-- Mobile version -->

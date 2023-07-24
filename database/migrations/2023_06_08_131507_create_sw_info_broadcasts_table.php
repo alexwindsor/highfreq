@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('sw_info_broadcasts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('station_id');
+            $table->foreignId('programme_id')->nullable();
             $table->foreignId('language_id');
             $table->foreignId('sw_info_transmitter_id');
             $table->unsignedSmallInteger('frequency');

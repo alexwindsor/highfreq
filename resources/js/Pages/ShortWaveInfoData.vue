@@ -6,9 +6,9 @@ import { base_url } from '@/base_url.js'
 import Pagination from '@/Components/Pagination.vue'
 
 const props = defineProps({
-    dateOfData: String,
     stations: Object,
     transmitters: Object,
+    dateOfData: String,
     day: String,
     time: String,
     user: Object,
@@ -16,16 +16,17 @@ const props = defineProps({
     frequency: Number,
     broadcasting_now: Boolean,
     station_id: Number,
-    swinfo_transmitter_id: Number
+    swinfo_transmitter_id: Number,
+    order_by: String
 })
 
 
 const filters = reactive({
-    frequency: props.frequency,
+    frequency: props.frequency === 0 ? null : props.frequency,
     broadcasting_now: props.broadcasting_now,
     station_id: props.station_id,
     swinfo_transmitter_id: props.swinfo_transmitter_id,
-    orderBy: 'frequency'
+    order_by: props.order_by
 })
 
 const broad = reactive({
@@ -34,7 +35,7 @@ const broad = reactive({
 
 
 function updateData() {
-    
+
     axios.post(base_url + 'shortWaveInfoData?page=' + props.page, filters).then(swInfoBroadcasts => {
         broad.casts = swInfoBroadcasts.data
         // check that the current page is not greater than the total number of pages
@@ -61,26 +62,19 @@ onMounted(() => {
 
 <Head title="HF / short-wave.info" />
 <Layout page="Short-Wave.info Listings" :user="user">
-    
+
     <div class="sm:grid sm:grid-cols-12 sm:gap-1 md:gap-2 lg:gap-4 mb-10">
 
-
-        <div class="sm:col-span-6 lg:col-span-3 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
+        <div class="sm:col-span-6 lg:col-span-2 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
             <div class="inline-block text-left mx-auto w-full xl:w-2/3">
-                Search by frequency :<br>
+                Frequency :<br>
                 <input type="number" max="30000" min="3000" class="block w-full border-2 border-black rounded p-1 text-black" v-model="filters.frequency" @keyup="updateData">
             </div>
         </div>
 
         <div class="sm:col-span-6 lg:col-span-3 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-            <div class="inline-block mx-auto w-full xl:w-2/3">
-                <label class="inline-block mx-2 my-0 sm:my-5 p-1">Broadcasting now <input type="checkbox" v-model="filters.broadcasting_now" @change="updateData" class="mx-5"></label>
-            </div>
-        </div>
-
-        <div class="sm:col-span-6 lg:col-span-3 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
             <div class="inline-block text-left mx-auto w-full xl:w-2/3">
-                Filter by Station:
+                Station:
                 <select class="block border-2 border-black p-2 w-full rounded text-black" v-model="filters.station_id" @change="updateData">
                     <option value="0">All Stations</option>
                     <option v-for="station in stations" :value="station.id">{{ station.name }}</option>
@@ -90,7 +84,7 @@ onMounted(() => {
 
         <div class="sm:col-span-6 lg:col-span-3 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
             <div class="inline-block text-left mx-auto w-full xl:w-2/3">
-                Filter by Transmitter:
+                Transmitter:
                 <select class="block border-2 border-black p-2 rounded w-full text-black" v-model="filters.swinfo_transmitter_id" @change="updateData">
                     <option value="0">All Transmitters</option>
                     <option v-for="transmitter in transmitters" :value="transmitter.id">{{ transmitter.name }}</option>
@@ -98,11 +92,23 @@ onMounted(() => {
             </div>
         </div>
 
-        <!-- <div>
-            Order by 
-                <label class="m-2">frequency <input type="radio" v-model="filters.orderBy" value="frequency" @click="updateData"></label> 
-                <label class="m-2">station <input type="radio" v-model="filters.orderBy" value="station" @click="updateData"></label>
-        </div> -->
+        <div class="sm:col-span-6 lg:col-span-2 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
+            <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+                Order by:
+                <br>
+                <select class="block border-2 border-black p-2 rounded w-full text-black" v-model="filters.order_by" @change="updateData">
+                    <option value="frequency">Frequency</option>
+                    <option value="station_id">Station</option>
+                    <option value="start_time">Start Time</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="sm:col-span-6 lg:col-span-2 p-2 sm:p-0 lg:p-2 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
+            <div class="inline-block mx-auto w-full xl:w-2/3">
+                <label class="inline-block mx-2 my-0 lg:my-4 p-1">Broadcasting now <input type="checkbox" v-model="filters.broadcasting_now" @change="updateData" class="mx-5"></label>
+            </div>
+        </div>
     </div>
 
     <div v-if="broad.casts.total === 0" class="mb-5">
@@ -119,11 +125,10 @@ onMounted(() => {
 
         <Pagination v-if="broad.casts.total > 100" :links="broad.casts.links" :filters="filters"></Pagination>
 
-        <div class="overflow-x-scroll whitespace-nowrap">
-            <div class="min-w-[800px] bg-gray-700 text-white grid grid-cols-10 mt-8 p-1">
+        <div class="overflow-x-scroll">
+            <div class="min-w-[800px] bg-gray-700 text-white grid grid-cols-9 mt-8 p-1">
                 <div class="col-span-1">frequency</div>
                 <div class="col-span-2">station</div>
-                <div class="col-span-1">programme</div>
                 <div class="col-span-2">start / end</div>
                 <div class="col-span-1">days</div>
                 <div class="col-span-1">language</div>
@@ -131,26 +136,24 @@ onMounted(() => {
                 <div class="col-span-1 text-right sm:text-left">strength</div>
             </div>
 
-            <div class="min-w-[800px] grid grid-cols-10 mb-2 border-t border-black p-1" v-for="swInfoBroadcast in broad.casts.data">
+            <div class="min-w-[800px] grid grid-cols-9 mb-2 border-t border-black p-1" v-for="swInfoBroadcast in broad.casts.data">
+
                 <div class="col-span-1 font-bold text-lg pl-5 pt-1">
                     {{ swInfoBroadcast.frequency }}
                 </div>
                     
                 <div class="col-span-2">
                     {{ swInfoBroadcast.station.name }}
+                    <div class="text-sm ">{{ swInfoBroadcast?.programme?.name }}?</div>
                 </div>
                         
-                <div class="col-span-1">
-                    {{ swInfoBroadcast.station.programme }}
+                <div class="col-span-2 text-center">
+                    {{ swInfoBroadcast.start_time.substring(0, 5) }} - {{ swInfoBroadcast.end_time.substring(0, 5) }}
                 </div>
 
-                <div class="col-span-2">
-                    {{ swInfoBroadcast.start_time.substring(0, 5) }} to {{ swInfoBroadcast.end_time.substring(0, 5) }}
-                </div>
-
-                <div class="text-sm col-span-1 whitespace-normal sm:pr-4 lg:pr-8">
-                    <div v-if="swInfoBroadcast.weekdays.length < 7" v-for="day in swInfoBroadcast.weekdays" class="pl-1 inline-block">{{ day }}</div>&nbsp;
-                    <span v-if="swInfoBroadcast.weekdays.length == 7" class="pl-1">Daily</span>
+                <div class="text-sm col-span-1 sm:pr-4 lg:pr-8">
+                    <div v-if="swInfoBroadcast.weekdays.length < 7" v-for="day in swInfoBroadcast.weekdays" class="pl-1 inline-block">{{ day }}</div>
+                    <div v-if="swInfoBroadcast.weekdays.length == 7" class="pl-1 inline-block">Daily</div>
                 </div>
 
                 <div class="col-span-1 text-sm">
@@ -178,7 +181,6 @@ onMounted(() => {
     <Pagination v-if="broad.casts.total > 100" :links="broad.casts.links" :filters="filters"></Pagination>
 
     <br><br><br>
-    
     
     <Link v-if="user && user.id === 1" href="/swiDataRip/rip" class="inline-block border-2 border-red-500 text-red-500 rounded p-2">Update data from short-wave.info</link>
 

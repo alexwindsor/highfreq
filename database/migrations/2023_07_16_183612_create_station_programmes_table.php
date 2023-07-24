@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sw_info_transmitters', function (Blueprint $table) {
+        Schema::create('station_programmes', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 64)->unique();
-            $table->string('longitude', 32)->nullable();
-            $table->string('latitude', 32)->nullable();
+            $table->foreignId('station_id');
+            $table->string('name', 64);
+
+            $table->unique(['station_id', 'name']);
+
         });
     }
 
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sw_info_transmitters');
+        Schema::dropIfExists('station_programmes');
     }
 };

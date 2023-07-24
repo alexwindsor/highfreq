@@ -16,6 +16,7 @@ class Log extends Model
 
     protected function scopeUserFilter(Builder $query, int $logOwners)
     {
+        // 0 = just show my logs, 1 = show all logs
         if ($logOwners === 0) $query->where('user_id', '=', auth()->user()->id);
     }
 
@@ -36,16 +37,14 @@ class Log extends Model
 
     protected function scopeWeekdayFilter(Builder $query, int $weekday)
     {
-        // sun=1, sat=7
-        if ($weekday >= 1 && $weekday <= 7) $query->whereRaw('dayofweek(time) = '. $weekday);
+        // 1 = sunday, 7 = saturday, 0 = no filter
+        if ($weekday >= 1 && $weekday <= 7) $query->whereRaw('dayofweek(datetime) = '. $weekday);
     }
 
     protected function scopeTimeFilter(Builder $query, string $time, bool $time_filter)
     {
-
-
         if ($time_filter) {
-            $query->whereRaw('HOUR(time) - HOUR(?) < 1 AND HOUR(time) - HOUR(?) > -1', [$time, $time]);
+            $query->whereRaw('HOUR(datetime) - HOUR(?) < 1 AND HOUR(datetime) - HOUR(?) > -1', [$time, $time]);
         }
     }
 
@@ -67,6 +66,12 @@ class Log extends Model
     public function station(): BelongsTo
     {
         return $this->belongsTo(Station::class);
+    }
+
+
+    public function stationProgramme(): BelongsTo
+    {
+        return $this->belongsTo(StationProgramme::class);
     }
 
     public function language(): BelongsTo

@@ -31,7 +31,7 @@ class SwInfoBroadcast extends Model
         }
     }
 
-    protected function scopeStation(Builder $query, int $station_id)
+    protected function scopeStation(Builder $query, $station_id)
     {
         if ($station_id > 0) $query->where('station_id', '=', $station_id);
     }
@@ -71,6 +71,11 @@ class SwInfoBroadcast extends Model
     public function station(): BelongsTo
     {
         return $this->belongsTo(Station::class);
+    }
+
+    public function programme(): BelongsTo
+    {
+        return $this->belongsTo(StationProgramme::class);
     }
 
     public function language(): BelongsTo
