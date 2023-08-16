@@ -9,7 +9,6 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\SwInfoBroadcastController;
 use App\Http\Controllers\BandsController;
 
-
 // home
 Route::get('/', function () {
     return Inertia::render('Home', [
@@ -19,9 +18,13 @@ Route::get('/', function () {
 
 // logs
 Route::get('/logs', [LogController::class, 'index'])->middleware(['auth', 'verified'])->name('logs');
-Route::post('/logs', [LogController::class, 'store'])->middleware(['auth', 'verified']);
+Route::post('/logs/add', [LogController::class, 'store'])->middleware(['auth', 'verified']);
 Route::put('/logs/update/{log_id}', [LogController::class, 'update'])->middleware(['auth', 'verified']);
-Route::post('/logs/filter', [LogController::class, 'filter'])->middleware(['auth', 'verified']);
+Route::post('/logs', [LogController::class, 'filter'])->middleware(['auth', 'verified']);
+Route::post('/logs/checkfrequency', [LogController::class, 'checkFrequency'])->middleware(['auth', 'verified']);
+Route::get('/getStations/{station_type_id}', [LogController::class, 'getStations'])->middleware(['auth', 'verified']);
+Route::get('/getLanguages/{station_type_id}', [LogController::class, 'getLanguages'])->middleware(['auth', 'verified']);
+Route::post('/logs', [LogController::class, 'filter'])->middleware(['auth', 'verified']);
 Route::delete('/logs/delete/{log_id}', [LogController::class, 'destroy'])->middleware(['auth', 'verified']);
 
 // shortWaveInfoData
@@ -67,16 +70,13 @@ Route::delete('/delete_account', [UserController::class, 'destroy'])->middleware
 
 // TO DO :
 
-// sort out GIT and GITHUB !!!
-
 /*
 shortWaveInfoData:
- - change pagination
  - make time displayed live and update data half/hourly
+ - click to add log
 
 logs:
- - pagination
- - make order/group by filter
+ - make group by filter
 
 *check everything over that it is mobile friendly
 

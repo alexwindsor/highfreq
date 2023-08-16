@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\SwInfo;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\SwInfoBroadcast;
 use App\Models\Station;
 use App\Models\StationProgramme;
 use App\Models\Language;
-use App\Models\SwInfoTransmitter;
-
+use App\Models\Transmitter;
 
 class SwInfoDataRip
 {
@@ -26,18 +26,26 @@ class SwInfoDataRip
         'wwvh',
         'jmh',
         'jmh',
-        'HFD Radio Station',
-        'hll seoul meteorological radio'
+        'hfd radio station',
+        'hll seoul meteorological radio',
+        'caribbean beacon (university netw',
     ];
 
     // prefixes that are removed and added later so they are not considered to be radio stations
     private static $prefixes = [
+        'RADIO CHANNEL',
+        'RADIO FREE',
         'RADIO',
+        'VOICE OF THE',
         'VOICE OF',
         'CHINA',
         'ECHO OF',
         'VOA',
+        'WORLD',
     ];
+
+
+
 
     public static function shortWaveInfoGet() {
 
@@ -46,6 +54,7 @@ class SwInfoDataRip
         $date_on_swinfo = self::getSwInfoDateOfData();
 
         $date_message = 'Data on server = ' . $date_on_server . ' and data on short-wave.info = ' . $date_on_swinfo;
+
 
         if (intval($date_on_swinfo) <= intval($date_on_server)) return $date_message . '<br><br>No scrape performed...';
 
@@ -59,15 +68,15 @@ class SwInfoDataRip
         file_put_contents('swinfo/date', $date_on_swinfo);
 
         // delete any stations or languages that have been orphaned (and aren't linked to any user logs)
-        // self::killOrphans(); // don't need to do this just yet as there are no orphans, it seems
+        self::killOrphans();
 
         return $date_message . '<br><br>completed';
-
     }
 
 
     public static function getServerDateOfData() {
         return file_get_contents('swinfo/date');
+        // return 0;
     }
 
 
@@ -115,7 +124,6 @@ class SwInfoDataRip
 
             if (! $row) continue;
 
-
             // get freq
             preg_match_all('/[0-9]{4,5}&#8201;/i', $row, $freq);
 
@@ -130,15 +138,14 @@ class SwInfoDataRip
             $rows[$rowcount]['station'] = strtoupper($rows[$rowcount]['station']);
             $rows[$rowcount]['station'] = str_replace('R.', 'RADIO ', $rows[$rowcount]['station']);
             $rows[$rowcount]['station'] = str_replace('VO ', 'VOICE OF ', $rows[$rowcount]['station']);
-            $rows[$rowcount]['station'] = str_replace('/', ' ', $rows[$rowcount]['station']);
+            $rows[$rowcount]['station'] = str_replace('INT.', 'INTERNATIONAL', $rows[$rowcount]['station']);
+            $rows[$rowcount]['station'] = str_replace('ISLAMIC REP.IRAN', 'IRAN', $rows[$rowcount]['station']);
+            $rows[$rowcount]['station'] = str_replace('/', ' / ', $rows[$rowcount]['station']);
             $rows[$rowcount]['station'] = str_replace('  ', ' ', $rows[$rowcount]['station']);
-            // $rows[$rowcount]['station'] = str_replace('< A>', '', $rows[$rowcount]['station']);
             $rows[$rowcount]['station'] = trim($rows[$rowcount]['station']);
             if ($rows[$rowcount]['station'] === 'CHINA RADIO INTERNATIONA') $rows[$rowcount]['station'] = 'CHINA RADIO INTERNATIONAL';
             if ($rows[$rowcount]['station'] === "'''VOICE OF CHINA'' RADIO STATION'") $rows[$rowcount]['station'] = 'VOICE OF CHINA RADIO STATION';
-
-            echo $rows[$rowcount]['station'] . '<br>';
-
+            
 
             // check the station against an array of stations that we are not interested in
             if (in_array(strtolower($rows[$rowcount]['station']), self::$blocked_stations)) continue;
@@ -150,6 +157,7 @@ class SwInfoDataRip
             // get end
             $row = substr($row, strpos($row, '</td><td>') + strlen('</td><td>'));
             $rows[$rowcount]['end'] = substr($row, 0, 5);
+            if ($rows[$rowcount]['end'] === '00:00') $rows[$rowcount]['end'] = '23:59';
 
             // get days
             $row = substr($row, strpos($row, '</td><td>') + strlen('</td><td>'));
@@ -173,7 +181,7 @@ class SwInfoDataRip
             $rows[$rowcount]['transmittersite'] = substr($row, 0, strpos($row, '">'));
             $rows[$rowcount]['transmittersite'] = html_entity_decode(trim($rows[$rowcount]['transmittersite']));
             $rows[$rowcount]['transmittersite'] = urldecode($rows[$rowcount]['transmittersite']);
-
+            if ($rows[$rowcount]['transmittersite'] === '') $rows[$rowcount]['transmittersite'] = 'Unknown';
 
             $rows[$rowcount]['transmitterlat'] = $rows[$rowcount]['transmitterlong'] = null;
             if (strpos($row, 'Latitude: ') > 1) {
@@ -199,23 +207,27 @@ class SwInfoDataRip
         // sort the array by station alphabetically
         usort($rows, function($a, $b){ return strcmp($a["station"], $b["station"]); });
 
+
         $previous_station = [];
         
         // compare each word in each station with each word in the previous station to see if it is a programme
         for ($i = 0; $i < count($rows); $i++) {
 
-            $prefix = '';
+            // check if the station has a prefix (from the hard coded list of prefixes) and remove that prefix, to be added later
+            // otherwise it will think that 'voice of' or 'radio' is the name of a station
+            $rows[$i]['station_prefix'] = null;
 
-            foreach (self::$prefixes as $prefixes) {
-                if (strpos($rows[$i]['station'], $prefixes) === 0) {
-                    $prefix = $prefixes . ' ';
-                    $rows[$i]['station'] = str_replace($prefix, '', $rows[$i]['station']);
+            foreach (self::$prefixes as $prefix) {
+                if (strpos($rows[$i]['station'], $prefix) === 0) {
+                    $rows[$i]['station_prefix'] = $prefix . ' ';
+                    $rows[$i]['station'] = str_replace($rows[$i]['station_prefix'], '', $rows[$i]['station']);
+                    break;
                 }
             }
 
+            // make an array of words that the station contains
             $this_station = explode(' ', $rows[$i]['station']);
-            $this_station = array_map('strval', $this_station);
-
+            
             if ($this_station === $previous_station) continue;
 
             $station = '';
@@ -224,28 +236,30 @@ class SwInfoDataRip
             // work out which has more words between this station and the previous
             $num_of_words = count($this_station) > count($previous_station) ? count($this_station) : count($previous_station);
 
+            
+
             for ($j = 0; $j < $num_of_words; $j++) {
 
                 if (!isset($this_station[$j])) $this_station[$j] = '';
                 if (!isset($previous_station[$j])) $previous_station[$j] = '';
 
-                // if both first words are different then we have the station name and move on
+                // if both first words are different then we have a new station name and move on
                 if ($j === 0 && $previous_station[$j] !== $this_station[$j]) {
                     $station = $rows[$i]['station'];
                     break;
                 }
 
                 // if they match and we haven't started making the programme, keep building the station name
-                if (($previous_station[$j] === $this_station[$j] || $this_station[$j] === 'RADIO') && $programme === '') {
+                if (($previous_station[$j] === $this_station[$j]) && $programme === '') {
                     $station .= $this_station[$j] . ' ';
                 }
                 // if we have a divergence between the words then add it to the name of the programme
-                elseif ($previous_station[$j] !== $this_station[$j]) {
+                elseif ($previous_station[$j] != $this_station[$j]) {
                     $programme .= $this_station[$j] . ' ';
                 }
             }
             
-            $rows[$i]['station'] = $prefix . rtrim($station);
+            $rows[$i]['station'] = trim($station);
             $rows[$i]['programme'] = trim($programme);
 
             // if there is a programme, we need to check the previous station to see if a programme needs to be made out of it
@@ -256,25 +270,37 @@ class SwInfoDataRip
                 while (strpos($rows[$i - $n]['station'], $rows[$i]['station']) === 0 && strlen($rows[$i - $n]['station']) > strlen($rows[$i]['station'])) {
                     $rows[$i - $n]['programme'] = trim(str_replace($rows[$i]['station'], '', $rows[$i - $n]['station'])) . ' ' . $rows[$i - $n]['programme'];
                     $rows[$i - $n]['station'] = $rows[$i]['station'];
-
                     $n++;
                 }
             }
 
-            $previous_station = explode(' ', $rows[$i]['station']);
-            $previous_station = array_map('strval', $previous_station);
-
+            $previous_station = trim(str_replace($rows[$i]['station_prefix'], '', $rows[$i]['station']));
+            $previous_station = explode(' ', $previous_station);
         }
+
+
+        // reapply the suffixes to the station name
+        for ($i = 0; $i < count($rows); $i++) {
+            if ($rows[$i]['station_prefix']) $rows[$i]['station'] = $rows[$i]['station_prefix'] . $rows[$i]['station'];
+            // echo out the rows for debugging:
+            echo $rows[$i]['station'] . ' <span style="color:gray">' . $rows[$i]['programme'] . '</span><br>';
+            echo ' <span style="font-size:80%">' . $rows[$i]['language'] . '</span><br>';
+        }
+
+        // die();
+
+
+
 
         // insert the rows into the database
         foreach ($rows as $row) {
 
-            $station = Station::firstOrCreate(['station_types_id' => 1, 'name' => trim($row['station'])]);
+            $station = Station::firstOrCreate(['station_type_id' => 1, 'name' => trim($row['station'])]);
 
-            $programme_id = null;
+            $station_programme_id = null;
             if (! empty($row['programme'])) {
                 $programme = StationProgramme::firstOrCreate(['station_id' => $station->id, 'name' => trim($row['programme'])]);
-                $programme_id = $programme->id;
+                $station_programme_id = $programme->id;
             }
 
             $language_id = 1; // unknown or n/a
@@ -283,13 +309,13 @@ class SwInfoDataRip
                 $language_id = $language->id;
             }
 
-            $sw_info_transmitters = SwInfoTransmitter::firstOrCreate(['name' => $row['transmittersite']], ['longitude' => $row['transmitterlong'], 'latitude' => $row['transmitterlat']]);
+            $transmitter = Transmitter::firstOrCreate(['name' => $row['transmittersite']], ['longitude' => $row['transmitterlong'], 'latitude' => $row['transmitterlat']]);
 
             SwInfoBroadcast::create([
                 'station_id' => $station->id,
-                'programme_id' => $programme_id,
+                'station_programme_id' => $station_programme_id,
                 'language_id' => $language->id,
-                'sw_info_transmitter_id' => $sw_info_transmitters->id,
+                'transmitter_id' => $transmitter->id,
                 'frequency' => intval($row['freq']),
                 'start_time' => trim($row['start']) . ':00',
                 'end_time' => $row['end'] . ':00',
@@ -306,12 +332,17 @@ class SwInfoDataRip
 
 
 
-    // private static function killOrphans() {
+    private static function killOrphans() {
 
-    //     SELECT * FROM `languages` where id not in (select language_id from sw_info_broadcasts) and id not in (select language_id from logs); 
-    //     SELECT * FROM `stations` where id not in (select station_id from sw_info_broadcasts) and id not in (select station_id from logs); 
 
-    // }
+        DB::statement('DELETE FROM `station_programmes` where station_id not in (select id from stations) and id not in (select station_programme_id from logs where station_programme_id is not null)');
+
+        DB::statement('DELETE FROM `stations` where id not in (select station_id from sw_info_broadcasts) and id not in (select station_id from logs)');
+
+        DB::statement('DELETE FROM `languages` where id not in (select language_id from sw_info_broadcasts) and id not in (select language_id from logs) and id > 1');
+
+        DB::statement('DELETE FROM `transmitters` where id not in (select transmitter_id from sw_info_broadcasts)');
+    }
 
 
 

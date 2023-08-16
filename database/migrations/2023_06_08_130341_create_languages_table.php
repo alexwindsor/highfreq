@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('languages', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('station_type_id')->constrained();
             $table->string('name', 48)->unique();
         });
     }

@@ -29,8 +29,8 @@ class DatabaseSeeder extends Seeder
         StationType::create(['name' => 'Broadcast Station']);
         StationType::create(['name' => 'Utility Station']);
 
-        Language::create(['name' => 'Unknown or n/a']);
-        Language::create(['name' => 'morse code, numbers, databursts etc.']);
+        Language::create(['name' => 'Unknown']);
+        // Language::create(['name' => 'morse code, numbers, databursts etc.']);
 
         // shell_exec('mysql -u alex -pm0r3t0n highfreq_dev < ' . __DIR__ . '/highfreq.sql');
     }

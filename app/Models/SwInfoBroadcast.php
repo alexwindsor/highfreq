@@ -26,24 +26,28 @@ class SwInfoBroadcast extends Model
 
         $query
             ->where('weekdays', '&', $day)
-            ->where('start_time', '<=', date('H:i:s'))
-            ->where('end_time', '>=', date('H:i:s'));
+            ->whereRaw('IF(start_time > end_time, "' . date('H:i:s') . '" BETWEEN `start_time` AND "23:59" OR "' . date('H:i:s') . '" BETWEEN "00:00" AND `end_time`, "' . date('H:i:s') . '" BETWEEN `start_time` AND `end_time`)');
         }
     }
 
     protected function scopeStation(Builder $query, $station_id)
     {
-        if ($station_id > 0) $query->where('station_id', '=', $station_id);
+        if ($station_id > 0) $query->where('sw_info_broadcasts.station_id', '=', $station_id);
     }
 
-    protected function scopeTransmitter(Builder $query, int $sw_info_transmitter_id)
+    protected function scopeLanguage(Builder $query, int $language_id)
     {
-        if ($sw_info_transmitter_id > 0) $query->where('sw_info_transmitter_id', '=', $sw_info_transmitter_id);
+        if ($language_id > 0) $query->where('sw_info_broadcasts.language_id', '=', $language_id);
+    }
+
+    protected function scopeTransmitter(Builder $query, int $transmitter_id)
+    {
+        if ($transmitter_id > 0) $query->where('sw_info_broadcasts.transmitter_id', '=', $transmitter_id);
     }
 
     protected function scopeFrequency(Builder $query, int $frequency)
     {
-        if ($frequency > 1000 && $frequency < 30000) $query->where('frequency', '=', $frequency);
+        if ($frequency > 0) $query->where('frequency', '=', $frequency);
     }
 
 
@@ -73,7 +77,7 @@ class SwInfoBroadcast extends Model
         return $this->belongsTo(Station::class);
     }
 
-    public function programme(): BelongsTo
+    public function station_programme(): BelongsTo
     {
         return $this->belongsTo(StationProgramme::class);
     }
@@ -83,9 +87,9 @@ class SwInfoBroadcast extends Model
         return $this->belongsTo(Language::class);
     }
 
-    public function swInfoTransmitter(): BelongsTo
+    public function transmitter(): BelongsTo
     {
-        return $this->belongsTo(SwInfoTransmitter::class);
+        return $this->belongsTo(Transmitter::class);
     }
 
 }

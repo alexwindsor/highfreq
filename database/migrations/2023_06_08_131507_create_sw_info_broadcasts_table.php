@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('sw_info_broadcasts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('station_id');
-            $table->foreignId('programme_id')->nullable();
-            $table->foreignId('language_id');
-            $table->foreignId('sw_info_transmitter_id');
+            $table->foreignId('station_id')->constrained();
+            $table->foreignId('station_programme_id')->nullable()->constrained();
+            $table->foreignId('language_id')->constrained();
+            $table->foreignId('transmitter_id')->constrained();
             $table->unsignedSmallInteger('frequency');
             $table->time('start_time');
             $table->time('end_time');

@@ -36,6 +36,4 @@ function changeQuality() {
         <input type="radio" v-model="quality" value="3" class="m-2" @change="changeQuality">
     </label>
 
-    {{ quality }}
-
 </template>

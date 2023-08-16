@@ -1,4 +1,4 @@
-# HighFreq
+Freq
 
 * Laravel 10 / Vue3 / InertiaJS / TailwindCSS / Vite Development server
 * Vite development server

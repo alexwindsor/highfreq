@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sw_info_transmitters', function (Blueprint $table) {
+        Schema::create('transmitters', function (Blueprint $table) {
             $table->id();
             $table->string('name', 64)->unique();
             $table->string('longitude', 32)->nullable();
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sw_info_transmitters');
+        Schema::dropIfExists('transmitters');
     }
 };

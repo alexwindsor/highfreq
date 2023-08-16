@@ -77,6 +77,6 @@ defineProps({
       </article>
 
     </div>
-    
+
   </main>
 </template>

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('stations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('station_types_id');
+            $table->foreignId('station_type_id')->constrained();
             $table->string('name', 64)->unique();
             $table->mediumText('details')->nullable();
         });

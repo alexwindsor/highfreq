@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->foreignId('station_id');
-            $table->foreignId('station_programme_id')->nullable();
-            $table->foreignId('language_id');
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('station_id')->constrained();
+            $table->foreignId('station_programme_id')->nullable()->constrained();
+            $table->foreignId('language_id')->constrained();
             $table->unsignedSmallInteger('frequency');
             $table->dateTime('datetime');
             $table->unsignedSmallInteger('quality');
