@@ -11,7 +11,6 @@ const props = defineProps({
 })
 
 function changeTime() {
-console.log('change time')
   logs.updateTimeRange()
   logs.updateLogs()
 
@@ -21,10 +20,10 @@ console.log('change time')
 
 <template>
 
-<div class="sm:grid sm:grid-cols-12 sm:gap-1 md:gap-2 lg:gap-4 mb-10">
+<div class="mb-10 sm:grid sm:grid-cols-12 sm:gap-1 md:gap-2 lg:gap-4">
     <!-- frequency -->
-    <div class="sm:col-span-6 lg:col-span-3 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-        <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+    <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-3">
+        <div class="mx-auto inline-block w-full text-left xl:w-2/3">
             Frequency:
             <br>
             <input
@@ -32,15 +31,15 @@ console.log('change time')
                 v-model="logs.filters.frequency"
                 min="100"
                 max="30000"
-                class="block w-full border-2 border-black rounded p-1 text-black"
+                class="block w-full rounded border-2 border-black p-1 text-black"
                 @keyup="logs.updateLogs('frequency')"
             >
         </div>
     </div>
 
     <!-- station -->
-    <div class="sm:col-span-6 lg:col-span-3 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-        <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+    <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-3">
+        <div class="mx-auto inline-block w-full text-left xl:w-2/3">
             <StationsDropDown
                 :required="false"
                 :station_id="logs.filters.station_id"
@@ -55,8 +54,8 @@ console.log('change time')
     </div>
 
         <!-- language -->
-        <div class="sm:col-span-6 lg:col-span-3 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-        <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+        <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-3">
+        <div class="mx-auto inline-block w-full text-left xl:w-2/3">
             <LanguagesDropDown
                 :required="false"
                 :language_id="logs.filters.language_id"
@@ -68,14 +67,14 @@ console.log('change time')
     </div>
 
     <!-- day of week -->
-    <div class="sm:col-span-6 lg:col-span-3 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-        <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+    <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-3">
+        <div class="mx-auto inline-block w-full text-left xl:w-2/3">
             Weekday:
             <br>
             <select
                 v-model="logs.filters.weekday"
-                class="block border-2 border-black p-2 rounded text-black text-sm sm:text-base w-full"
-                @change="logs.updateLogs(filters)"
+                class="block w-full rounded border-2 border-black p-2 text-sm text-black sm:text-base"
+                @change="logs.updateLogs"
             >
                 <option value="0">All days</option>
                 <option value="2">Mon {{ logs.today === 2 ? '(today)' : '' }}</option>
@@ -90,15 +89,15 @@ console.log('change time')
     </div>
 
     <!-- time of day -->
-    <div class="sm:col-span-6 lg:col-span-3 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-        <div class="inline-block text-left mx-auto w-full xl:w-2/3">
-            <label>Time? <input type="checkbox" v-model="logs.filters.time_filter" @change="logs.updateLogs('time_filter')" class="ml-4 mb-1"></label>
+    <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-3">
+        <div class="mx-auto inline-block w-full text-left xl:w-2/3">
+            <label>Time? <input type="checkbox" v-model="logs.filters.time_filter" @change="logs.updateLogs('time_filter')" class="mb-1 ml-4"></label>
             <div v-if="logs.filters.time_filter">
                 <input
                     type="time"
                     v-model="logs.filters.time"
                     @blur="changeTime"
-                    class="border-2 border-black rounded text-black p-1 mr-1 w-5/6"
+                    class="mr-1 w-5/6 rounded border-2 border-black p-1 text-black"
                     :class="{'bg-gray-600': ! logs.filters.time_filter}"
                     :disabled="logs.filters.make_time_now"
                 >
@@ -106,7 +105,7 @@ console.log('change time')
 
 
                 <br>
-                <label class="block m-2">Now? <input type="checkbox" v-model="logs.filters.make_time_now" @change="logs.updateLogs('make_time_now')"></label>
+                <label class="m-2 block">Now? <input type="checkbox" v-model="logs.filters.make_time_now" @change="logs.updateLogs('make_time_now')"></label>
 
                 <br>
                 Range, <label>half-hour blocks? <input type="checkbox" v-model="logs.filters.half_hour_blocks" @change="changeTime"></label>
@@ -119,8 +118,8 @@ console.log('change time')
     </div>
 
     <!-- reception quality -->
-    <div class="sm:col-span-6 lg:col-span-3 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-        <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+    <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-3">
+        <div class="mx-auto inline-block w-full text-left xl:w-2/3">
             <ReceptionQuality
                 :quality="logs.filters.quality"
                 @quality="logs.updateFilters('quality', $event)"
@@ -129,35 +128,35 @@ console.log('change time')
     </div>
 
     <!-- all logs or just your logs -->
-    <div class="sm:col-span-6 lg:col-span-3 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-        <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+    <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-3">
+        <div class="mx-auto inline-block w-full text-left xl:w-2/3">
             <label>Show everyone's logs <input type="checkbox" v-model="logs.filters.log_owners" @change="logs.updateLogs"></label>
         </div>
     </div>
 
     <!-- comments filter -->
-    <div class="sm:col-span-6 lg:col-span-3 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-        <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+    <div v-if="! logs.filters.group_results" class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-3">
+        <div class="mx-auto inline-block w-full text-left xl:w-2/3">
             Search comments:
             <br>
             <input
                 type="text"
                 v-model="logs.filters.commentSearch"
-                class="border-2 border-black p-2 text-black rounded w-full"
-                @keyup="logs.updateLogs(filters)"
+                class="w-full rounded border-2 border-black p-2 text-black"
+                @keyup="logs.updateLogs"
             >
         </div>
     </div>
 
-        <!-- order by -->
-    <div class="sm:col-span-6 lg:col-span-3 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-        <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+    <!-- order by -->
+    <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-3">
+        <div class="mx-auto inline-block w-full text-left xl:w-2/3">
             Order by:
             <br>
             <select
                 v-model="logs.filters.order_by"
-                class="block border-2 border-black p-2 rounded text-black text-sm sm:text-base w-full"
-                @change="logs.updateLogs(filters)"
+                class="block w-full rounded border-2 border-black p-2 text-sm text-black sm:text-base"
+                @change="logs.updateLogs"
             >
                 <option value="`station_id`, `frequency`">Station, Frequency</option>
                 <option value="`datetime`-DESC">Date &lt;-</option>
@@ -168,6 +167,13 @@ console.log('change time')
             </select>
         </div>
     </div>
+
+  <!-- group by -->
+  <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-3">
+    <div class="mx-auto inline-block w-full text-left xl:w-2/3">
+      <label>Group results? <input type="checkbox" v-model="logs.filters.group_results" @change="logs.updateLogs('group_results')"></label>
+    </div>
+  </div>
 
 </div>
 

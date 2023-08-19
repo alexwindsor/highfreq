@@ -17,6 +17,15 @@ const props = defineProps({
 <template>
 
 <div class="grid grid-cols-12 gap-1 mb-3">
+    <!-- count -->
+    <div
+        v-if="logs.filters.group_results"
+        class="col-span-12 lg:col-span-2 bg-gray-600 text-white rounded-sm p-2"
+        :class="{'hidden sm:block': log.comment === null && logs.edit_mode !== log.id}"
+    >
+      {{ log.count }}
+    </div>
+
     <!-- frequency -->
     <div class="col-span-4 lg:col-span-2 bg-gray-600 text-white rounded-sm px-1 lg:px-3 py-3 lg:py-4 text-center text-xl">
         <div v-if="logs.edit_mode === log.id">
@@ -96,16 +105,19 @@ const props = defineProps({
     </div>
 
     <!-- time -->
-    <div class="col-span-12 lg:col-span-2 bg-gray-600 text-white text-center rounded-sm py-1 lg:py-3 lg:pr-24">
+    <div
+        v-if="!logs.filters.group_results && props.log.datetime"
+        class="col-span-12 lg:col-span-2 bg-gray-600 text-white text-center rounded-sm py-1 lg:py-3 lg:pr-24"
+    >
         <div v-if="logs.edit_mode === log.id" class="p-6 whitespace-nowrap">
             <input type="datetime-local" v-model="log.datetime" class="border-2 border-black rounded text-black p-1 mr-0.5"><b>z</b>
         </div>
 
         <div v-else>
             <div class="inline-block whitespace-nowrap text-left text-base">
-                {{ props.log.datetime.substring(11, 16) }}
+                {{ props.log?.datetime.substring(11, 16) }}
                 <br>
-                {{ props.log.datetime.substring(8, 10) }}/{{ props.log.datetime.substring(5, 7) }}/{{ props.log.datetime.substring(0, 4) }}
+                {{ props.log?.datetime.substring(8, 10) }}/{{ props.log?.datetime.substring(5, 7) }}/{{ props.log?.datetime.substring(0, 4) }}
             </div>
         </div>
     </div>
@@ -126,6 +138,7 @@ const props = defineProps({
 
     <!-- comments -->
     <div
+        v-if="!logs.filters.group_results"
         class="col-span-12 lg:col-span-2 bg-gray-600 text-white rounded-sm p-2"
         :class="{'hidden sm:block': log.comment === null && logs.edit_mode !== log.id}"
     >
@@ -134,7 +147,10 @@ const props = defineProps({
     </div>
 
     <!-- logged by -->
-    <div class="col-span-6 lg:col-span-1 bg-gray-600 text-white rounded-sm p-1">
+    <div
+        v-if="!logs.filters.group_results"
+        class="col-span-6 lg:col-span-1 bg-gray-600 text-white rounded-sm p-1"
+    >
         {{ log.user_id === user.id ? 'you' : log.user_name }}
         <div v-if="log.user_id === user.id">
             <button
