@@ -1,4 +1,4 @@
-import { reactive, ref } from "vue";
+import { reactive } from "vue";
 import { router } from '@inertiajs/vue3'
 import { base_url } from '@/base_url.js'
 
@@ -6,9 +6,10 @@ export let logs = reactive({
 
 
     showHideAddLog: false,
-    showHideLogFilters: false,
+    showHideFilterLogs: false,
 
     today: null,
+    mode: 'browse',
     stations: [],
     languages: [],
 
@@ -38,6 +39,23 @@ export let logs = reactive({
     edit_mode: false, // becomes the id of the log being edited
     edit_errors: {
         frequency: ''
+    },
+
+    changeMode() {
+
+        if (this.mode === 'browse') {
+            this.filters.group_results = true
+            this.filters.order_by = '`station_id`, `frequency`'
+            this.filters.weekday = 0
+        }
+        else if (this.mode === 'add') {
+            this.filters.group_results = false
+            this.filters.order_by = '`datetime`-DESC'
+            this.filters.weekday = this.today
+        }
+
+        this.updateLogs()
+
     },
 
 
@@ -131,6 +149,8 @@ export let logs = reactive({
         if (filter_change === 'frequency' && (this.filters.frequency < 100 || this.filters.frequency > 30000)) return false
         if (filter_change === 'make_time_now' && this.filters.make_time_now === true) await new Promise(r => setTimeout(r, 1000))
         if (filter_change === 'time_filter' && this.filters.time_filter === true && this.filters.time === '') return false
+        if (filter_change === 'group_results' && this.filters.group_results === false) this.mode = 'add'
+        else if (filter_change === 'group_results' && this.filters.group_results === true) this.mode = 'browse'
 
         await axios.post(base_url + 'logs', this.filters).then(logs => {
             this.logs = logs.data
@@ -157,9 +177,8 @@ export let logs = reactive({
 
     makeQuerystring() {
 
-        return '&station_type=' + this.filters.station_type + '&frequency=' + this.filters.frequency + '&weekday=' + this.filters.weekday + '&time_filter=' + this.filters.time_filter + '&time_range=' + this.filters.time_range + '&half_hour_blocks=' + this.filters.half_hour_blocks + '&time=' + this.filters.time + '&make_time_now=' + this.filters.make_time_now + '&station_id=' + this.filters.station_id + '&station_name=' + this.filters.station_name + '&language_id=' + this.filters.language_id + '&language_name=' + this.filters.language_name + '&quality=' + this.filters.quality + '&commentSearch=' + this.filters.commentSearch + '&log_owners=' + this.filters.log_owners + '&order_by=' + this.filters.order_by
+        return '&station_type=' + this.filters.station_type + '&frequency=' + this.filters.frequency + '&weekday=' + this.filters.weekday + '&time_filter=' + this.filters.time_filter + '&time_range=' + this.filters.time_range + '&half_hour_blocks=' + this.filters.half_hour_blocks + '&time=' + this.filters.time + '&make_time_now=' + this.filters.make_time_now + '&station_id=' + this.filters.station_id + '&station_name=' + this.filters.station_name + '&language_id=' + this.filters.language_id + '&language_name=' + this.filters.language_name + '&quality=' + this.filters.quality + '&commentSearch=' + this.filters.commentSearch + '&log_owners=' + this.filters.log_owners + '&order_by=' + this.filters.order_by + '&group_results=' + this.filters.group_results
     },
-
 
     updateTimeRange() {
 
@@ -268,7 +287,6 @@ export let logs = reactive({
             this.resetNewlog()
             // get the programmes (if any) for this station
             this.getStationProgrammes(log.station_id)
-            // console.log(log.id)
             this.edit_mode = log.id
         }
     },
@@ -295,7 +313,7 @@ export let logs = reactive({
         this.newlog.frequency = frequency
         this.newlog.station_id = station_id
         this.newlog.station_name = station_name
-        this.newlog.station_programme_id = station_programme_id
+        this.newlog.station_programme_id = station_programme_id === null ? 0 : station_programme_id
         this.newlog.station_programme_name = station_programme_name
         this.newlog.language_id = language_id
         this.newlog.language_name = language_name

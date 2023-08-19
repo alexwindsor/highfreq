@@ -14,6 +14,38 @@ class Log extends Model
     public $timestamps = false;
     public $guarded = ['id'];
 
+    protected static function applyFilters(bool $log_owners, bool $time_filter, string $bottom_time_range, string $top_time_range, int $weekday, int $frequency, int $station_type, int $station_id, int $language_id, int $quality, string $commentSearch, string $order, bool $group_by)
+    {
+
+        $logQuery = (new Log)->newQuery();
+
+        if (!$group_by) $logQuery->join('users', 'logs.user_id', '=', 'users.id');
+
+        if ($group_by) {
+            $logQuery->select('logs.station_id', 'logs.station_programme_id', 'logs.language_id', 'logs.frequency', 'stations.name as station_name', 'stations.station_type_id as station_type_id', 'station_programmes.name as station_programme_name', 'languages.name as language_name');
+            $logQuery->selectRaw('count(*) as count');
+            $logQuery->selectRaw('avg(logs.quality) as quality');
+        }
+        elseif (!$group_by) $logQuery->select('logs.id', 'logs.user_id', 'logs.station_id', 'logs.station_programme_id', 'logs.language_id', 'logs.frequency', 'logs.datetime', 'logs.quality', 'logs.comment', 'users.name as username', 'stations.name as station_name', 'stations.station_type_id as station_type_id', 'station_programmes.name as station_programme_name', 'languages.name as language_name');
+
+        $logQuery->join('stations', 'logs.station_id', '=', 'stations.id');
+        $logQuery->leftJoin('station_programmes', 'logs.station_programme_id', '=', 'station_programmes.id');
+        $logQuery->join('languages', 'logs.language_id', '=', 'languages.id');
+        $logQuery->user($log_owners);
+        $logQuery->time($time_filter, $bottom_time_range, $top_time_range);
+        $logQuery->weekday($weekday);
+        $logQuery->frequency($frequency);
+        $logQuery->stationType($station_type);
+        $logQuery->station($station_id);
+        $logQuery->language($language_id);
+        $logQuery->quality($quality);
+        $logQuery->orderByRaw($order);
+        if (!$group_by) $logQuery->commentSearch($commentSearch);
+        if ($group_by) $logQuery->groupBy(['logs.station_id', 'stations.name', 'stations.station_type_id', 'logs.station_programme_id', 'station_programmes.name', 'logs.frequency', 'logs.language_id', 'languages.name']);
+
+        return $logQuery->paginate(10);
+    }
+
     protected function scopeUser(Builder $query, bool $logOwners): void
     {
         // 0 = just show my logs, 1 = show all logs

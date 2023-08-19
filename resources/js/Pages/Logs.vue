@@ -31,7 +31,8 @@ const props = defineProps({
     quality: Number,
     commentSearch: String,
     log_owners: Boolean,
-    order_by: String
+    order_by: String,
+    group_results: Boolean
 })
 
 function makeTime() {
@@ -94,6 +95,7 @@ function updateFilters() {
     logs.filters.commentSearch = props.commentSearch
     logs.filters.log_owners = props.log_owners
     logs.filters.order_by = props.order_by
+    logs.filters.group_results = props.group_results
 }
 
 setInterval(makeTime, 1000)
@@ -140,6 +142,13 @@ onMounted(() => {
 
 <Layout page="Logs" :user="user">
 
+    <label class="bg-black text-white m-2 p-2">Browse mode <input type="radio" value="browse" v-model="logs.mode" @change="logs.changeMode"></label>
+    <label class="bg-black text-white m-2 p-2">Add mode <input type="radio" value="add" v-model="logs.mode" @change="logs.changeMode"></label>
+
+    <br><br>
+
+
+
     <label class="mb-2">Broadcast <input type="radio" v-model="logs.filters.station_type" value="1" @change="changeStationType()"></label>, or <label>Utility <input type="radio" v-model="logs.filters.station_type" value="2" @change="changeStationType()"></label> stations
 
   <br><br>
@@ -157,13 +166,13 @@ onMounted(() => {
 
     <button
         class="block text-xl border border-l border-black rounded-sm p-2 mb-2"
-        @click="logs.showHideLogFilters = ! logs.showHideLogFilters"
+        @click="logs.showHideFilterLogs = ! logs.showHideFilterLogs"
     >
     Filter Logs
     </button>
 
     <LogFilters
-        v-if="logs.showHideLogFilters"
+        v-if="logs.showHideFilterLogs"
     />
 
     <!-- ////////////////////////////////// -->

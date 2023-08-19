@@ -74,50 +74,50 @@ onMounted(() => {
 <Layout page="Short-Wave.info Listings" :user="user">
 
 
-    <div class="sm:grid sm:grid-cols-12 sm:gap-1 md:gap-2 lg:gap-4 mb-10">
+    <div class="mb-10 sm:grid sm:grid-cols-12 sm:gap-1 md:gap-2 lg:gap-4">
 
-        <div class="sm:col-span-6 lg:col-span-2 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-            <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+        <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-2">
+            <div class="mx-auto inline-block w-full text-left xl:w-2/3">
                 Frequency :<br>
-                <input type="number" max="30000" min="3000" class="block w-full border-2 border-black rounded p-1 text-black" v-model="filters.frequency" @keyup="updateData">
+                <input type="number" max="30000" min="3000" class="block w-full rounded border-2 border-black p-1 text-black" v-model="filters.frequency" @keyup="updateData">
             </div>
         </div>
 
-        <div class="sm:col-span-6 lg:col-span-2 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-            <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+        <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-2">
+            <div class="mx-auto inline-block w-full text-left xl:w-2/3">
                 Station:
-                <select class="block border-2 border-black p-2 w-full rounded text-black" v-model="filters.station_id" @change="updateData">
+                <select class="block w-full rounded border-2 border-black p-2 text-black" v-model="filters.station_id" @change="updateData">
                     <option value="0">All Stations</option>
                     <option v-for="station in stations" :value="station.id">{{ station.name }}</option>
                 </select>
             </div>
         </div>
 
-        <div class="sm:col-span-6 lg:col-span-2 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-            <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+        <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-2">
+            <div class="mx-auto inline-block w-full text-left xl:w-2/3">
                 Language:
-                <select class="block border-2 border-black p-2 rounded w-full text-black" v-model="filters.language_id" @change="updateData">
+                <select class="block w-full rounded border-2 border-black p-2 text-black" v-model="filters.language_id" @change="updateData">
                     <option value="0">Any Language</option>
                     <option v-for="language in languages" :value="language.id">{{ language.name }}</option>
                 </select>
             </div>
         </div>
 
-        <div class="sm:col-span-6 lg:col-span-2 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-            <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+        <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-2">
+            <div class="mx-auto inline-block w-full text-left xl:w-2/3">
                 Transmitter:
-                <select class="block border-2 border-black p-2 rounded w-full text-black" v-model="filters.transmitter_id" @change="updateData">
+                <select class="block w-full rounded border-2 border-black p-2 text-black" v-model="filters.transmitter_id" @change="updateData">
                     <option value="0">All Transmitters</option>
                     <option v-for="transmitter in transmitters" :value="transmitter.id">{{ transmitter.name }}</option>
                 </select>
             </div>
         </div>
 
-        <div class="sm:col-span-6 lg:col-span-2 p-2 sm:p-3 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-            <div class="inline-block text-left mx-auto w-full xl:w-2/3">
+        <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-2">
+            <div class="mx-auto inline-block w-full text-left xl:w-2/3">
                 Order by:
                 <br>
-                <select class="block border-2 border-black p-2 rounded w-full text-black" v-model="filters.order_by" @change="updateData">
+                <select class="block w-full rounded border-2 border-black p-2 text-black" v-model="filters.order_by" @change="updateData">
                     <option value="frequency">Frequency</option>
                     <option value="station_id">Station</option>
                     <option value="start_time">Start Time</option>
@@ -125,9 +125,9 @@ onMounted(() => {
             </div>
         </div>
 
-        <div class="sm:col-span-6 lg:col-span-2 p-2 sm:p-0 lg:p-2 mb-1 sm:mb-0 rounded bg-gray-700 text-white text-center">
-            <div class="inline-block mx-auto w-full xl:w-2/3">
-                <label class="inline-block mx-2 my-0 lg:my-4 p-1">Broadcasting now <input type="checkbox" v-model="filters.broadcasting_now" @change="updateData" class="mx-5"></label>
+        <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-0 lg:col-span-2 lg:p-2">
+            <div class="mx-auto inline-block w-full xl:w-2/3">
+                <label class="mx-2 my-0 inline-block p-1 lg:my-4">Broadcasting now <input type="checkbox" v-model="filters.broadcasting_now" @change="updateData" class="mx-5"></label>
             </div>
         </div>
     </div>
@@ -147,7 +147,7 @@ onMounted(() => {
         <Pagination v-if="broad.casts.total > 50" :links="broad.casts.links" :filters="broad.querystring" />
 
         <div class="overflow-x-scroll">
-            <div class="min-w-[800px] bg-gray-700 text-white grid grid-cols-8 mt-8 p-1">
+            <div class="mt-8 grid grid-cols-8 bg-gray-700 p-1 text-white min-w-[800px]">
                 <div class="col-span-1">frequency</div>
                 <div class="col-span-2">station</div>
                 <div class="col-span-1">start / end</div>
@@ -157,9 +157,9 @@ onMounted(() => {
                 <div class="col-span-1 text-right sm:text-left">strength</div>
             </div>
 
-            <div class="min-w-[800px] grid grid-cols-8 mb-10 border-t border-black p-1" v-for="swInfoBroadcast in broad.casts.data">
+            <div class="mb-10 grid grid-cols-8 border-t border-black p-1 min-w-[800px]" v-for="swInfoBroadcast in broad.casts.data">
                 <!-- frequency -->
-                <div class="col-span-1 font-bold text-lg pl-5 pt-1">
+                <div class="col-span-1 pt-1 pl-5 text-lg font-bold">
                     <Link class="underline" :href="base_url + 'shortWaveInfoData?frequency=' + swInfoBroadcast.frequency + '&broadcasting_now=false'">{{ swInfoBroadcast.frequency }}</Link>
                     <br>
                     <a :href="'http://websdr.ewi.utwente.nl:8901/?tune=' + swInfoBroadcast.frequency + 'am'" target="_blank" class="text-xs underline">websdr</a>
@@ -176,10 +176,10 @@ onMounted(() => {
                     {{ swInfoBroadcast.start_time.substring(0, 5) }}z - {{ swInfoBroadcast.end_time.substring(0, 5) }}z
                 </div>
 
-                <div class="text-sm col-span-1 sm:pr-4 lg:pr-8">
+                <div class="col-span-1 text-sm sm:pr-4 lg:pr-8">
                     <!-- days of the week -->
-                    <div v-if="swInfoBroadcast.weekdays.length < 7" v-for="day in swInfoBroadcast.weekdays" class="pl-1 inline-block">{{ day }}</div>
-                    <div v-if="swInfoBroadcast.weekdays.length == 7" class="pl-1 inline-block">Daily</div>
+                    <div v-if="swInfoBroadcast.weekdays.length < 7" v-for="day in swInfoBroadcast.weekdays" class="inline-block pl-1">{{ day }}</div>
+                    <div v-if="swInfoBroadcast.weekdays.length == 7" class="inline-block pl-1">Daily</div>
                 </div>
 
                 <div class="col-span-1 text-sm">
@@ -218,7 +218,7 @@ onMounted(() => {
 
     <Pagination v-if="broad.casts.total > 50" :links="broad.casts.links" :filters="broad.querystring" />
 
-    <Link v-if="user && user.id === 1" :href="base_url + 'swiDataRip/rip'" class="inline-block border-2 border-red-500 text-red-500 rounded p-2 mt-8">Update data from short-wave.info</link>
+    <Link v-if="user && user.id === 1" :href="base_url + 'swiDataRip/rip'" class="mt-8 inline-block rounded border-2 border-red-500 p-2 text-red-500">Update data from short-wave.info</link>
 
 </Layout>
 

@@ -27,7 +27,7 @@ function login() {
 
     <div class="sm:mx-32">
         <div class="mb-5">
-            Welcome to HighFreq, a site for short wave listeners to identify and log broadcast stations that they hear, and more resources. This website is only recently up and running and there are many more features coming. 
+            Welcome to HighFreq, a site for short wave listeners to identify and log broadcast stations that they hear, and more resources. This website is only recently up and running and there are many more features coming.
         </div>
 
         <div v-if="user" class="mb-5">

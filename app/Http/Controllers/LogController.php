@@ -53,6 +53,7 @@ class LogController extends Controller
             'commentSearch' => $filters['commentSearch'],
             'log_owners' => $filters['log_owners'],
             'order_by' => $filters['order_by'],
+            'group_results' => $filters['group_results'],
         ]);
     }
 
@@ -74,22 +75,8 @@ class LogController extends Controller
 
         $order = str_replace('-', ' ', $filters['order_by']);
 
-        return Log::join('users', 'logs.user_id', '=', 'users.id')
-            ->join('stations', 'logs.station_id', '=', 'stations.id')
-            ->leftJoin('station_programmes', 'logs.station_programme_id', '=', 'station_programmes.id')
-            ->join('languages', 'logs.language_id', '=', 'languages.id')
-            ->select('logs.id', 'logs.user_id', 'logs.station_id', 'logs.station_programme_id', 'logs.language_id', 'logs.frequency', 'logs.datetime', 'logs.quality', 'logs.comment', 'users.name as username', 'stations.name as station_name', 'stations.station_type_id as station_type_id', 'station_programmes.name as station_programme_name', 'languages.name as language_name')
-            ->user($filters['log_owners']) // your logs or everyone's
-            ->time($filters['time_filter'], $filters['bottom_time_range'], $filters['top_time_range'])
-            ->weekday($filters['weekday'])
-            ->frequency(intval($filters['frequency']))
-            ->stationType($filters['station_type'])
-            ->station($filters['station_id'])
-            ->language($filters['language_id'])
-            ->quality($filters['quality'])
-            ->commentSearch($filters['commentSearch'])
-            ->orderByRaw($order)
-            ->paginate(10);
+        return Log::applyFilters($filters['log_owners'], $filters['time_filter'], $filters['bottom_time_range'], $filters['top_time_range'], $filters['weekday'], $filters['frequency'], $filters['station_type'], $filters['station_id'], $filters['language_id'], $filters['quality'], $filters['commentSearch'], $order, $filters['group_results']);
+
     }
 
     public function checkFrequency() {
@@ -102,7 +89,7 @@ class LogController extends Controller
 
         $page = intval(request('page')) > 0 ? intval(request('page')) : 1;
         $station_type = intval(request('station_type')) === 2 ? 2 : 1;
-        $frequency = intval(request('frequency')) >= 100 && intval(request('frequency')) <= 30000 ? request('frequency') : null;
+        $frequency = intval(request('frequency')) >= 100 && intval(request('frequency')) <= 30000 ? request('frequency') : 0;
         $weekday = intval(request('weekday')) >= 0 || intval(request('weekday')) <= 7 ? intval(request('weekday')) : 0;
 
         if (request('time_filter') === null || request('time_filter') === true || request('time_filter') === 'true') $time_filter = true;
@@ -132,7 +119,10 @@ class LogController extends Controller
         elseif (request('log_owners') === 'false' || request('log_owners') === false) $log_owners = false;
 
         if (in_array(request('order_by'), $this->order_by_options)) $order_by = request('order_by');
-        else $order_by = '`datetime`-DESC';
+        else $order_by = '`station_id`, `frequency`';
+
+        if (request('group_results') === null || request('group_results') === true || request('group_results') === 'true') $group_results = true;
+        elseif (request('group_results') === 'false' || request('group_results') === false) $group_results = false;
 
         return [
             'page' => $page,
@@ -152,7 +142,8 @@ class LogController extends Controller
             'quality' => $quality,
             'commentSearch' => $commentSearch,
             'log_owners' => $log_owners,
-            'order_by' => $order_by
+            'order_by' => $order_by,
+            'group_results' => $group_results
         ];
     }
 
@@ -194,7 +185,7 @@ class LogController extends Controller
         if ($fields['station_programme_id'] === 0) $fields['station_programme_id'] = null;
         if (strlen($fields['comment']) === 0) $fields['comment'] = null;
 
-        $log = Log::create([
+        Log::create([
             'user_id' => auth()->user()->id,
             'frequency' => $fields['frequency'],
             'datetime' => $fields['datetime'],
