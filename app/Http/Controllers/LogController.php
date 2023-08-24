@@ -92,8 +92,8 @@ class LogController extends Controller
         $frequency = intval(request('frequency')) >= 100 && intval(request('frequency')) <= 30000 ? request('frequency') : 0;
         $weekday = intval(request('weekday')) >= 0 || intval(request('weekday')) <= 7 ? intval(request('weekday')) : 0;
 
-        if (request('time_filter') === null || request('time_filter') === true || request('time_filter') === 'true') $time_filter = true;
-        elseif (request('time_filter') === 'false' || request('time_filter') === false) $time_filter = false;
+        if (request('time_filter') === true || request('time_filter') === 'true') $time_filter = true;
+        elseif (request('time_filter') === null || request('time_filter') === 'false' || request('time_filter') === false) $time_filter = false;
 
         // $time = preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/', request('time')) ? request('time') : '';
 

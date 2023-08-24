@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import {reactive, ref} from "vue";
 import { router } from '@inertiajs/vue3'
 import { base_url } from '@/base_url.js'
 
@@ -41,22 +41,7 @@ export let logs = reactive({
         frequency: ''
     },
 
-    changeMode() {
 
-        if (this.mode === 'browse') {
-            this.filters.group_results = true
-            this.filters.order_by = '`station_id`, `frequency`'
-            this.filters.weekday = 0
-        }
-        else if (this.mode === 'add') {
-            this.filters.group_results = false
-            this.filters.order_by = '`datetime`-DESC'
-            this.filters.weekday = this.today
-        }
-
-        this.updateLogs()
-
-    },
 
 
     async checkFrequency() {
@@ -118,7 +103,6 @@ export let logs = reactive({
         await axios.post(base_url + 'logs/add', this.newlog).then(response => {
             alert('Log added')
             this.resetNewlog()
-            // update the logs list
             this.updateLogs()
         })
         .catch(error => {

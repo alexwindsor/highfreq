@@ -3,8 +3,8 @@ import { Link } from '@inertiajs/vue3'
 import { base_url } from '@/base_url.js'
 
 defineProps({
-    page: String,
-    user: Object,
+  page: String,
+  user: Object,
 })
 
 
@@ -68,9 +68,9 @@ defineProps({
       </div>
     </div>
 
-    <h1 v-if="page.length" class="text-2xl sm:text-3xl ml-4 sm:ml-14 mb-3 sm:mb-3 mt-6 sm:mt-12 sticky top-1">{{ page }}</h1>
+<!--    <h1 v-if="page.length" class="text-2xl sm:text-3xl ml-4 sm:ml-14 mb-3 sm:mb-3 mt-6 sm:mt-12">{{ page }}</h1>-->
 
-    <div class="mx-3 sm:mx-6 md:mx-12 lg:mx-16 xl:mx-20">
+    <div class="mx-3">
 
       <article class="mt-5 sm:mt-6 mb-8 sm:mb-16">
         <slot />

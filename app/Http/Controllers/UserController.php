@@ -40,14 +40,14 @@ class UserController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required']
           ]);
-      
+
           if (! auth()->attempt($attributes)) {
             return back()->withErrors(['authentication' => 'Incorrect email or password'])->withInput();
           }
-      
+
           session()->regenerate();
-          
-          return redirect('/');
+
+          return redirect('/logs/');
     }
 
 
@@ -86,7 +86,7 @@ class UserController extends Controller
 
 
     public function destroy() {
-        
+
         $fields = request()->validate([
             'password' => ['required']
         ]);
@@ -99,7 +99,7 @@ class UserController extends Controller
 
         User::destroy(auth()->user()->id);
         auth()->logout();
-        
+
         return redirect('/');
     }
 

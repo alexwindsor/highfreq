@@ -34,16 +34,16 @@ function pickLanguage(id, name) {
 
 <template>
 
-Language:<br>
+<span class="bg-gray-300">Language:</span><br>
 <input
     type="text"
     v-model="language_name"
-    class="border-2 border-black rounded text-black text-sm p-1 mr-2 w-full"
+    class="border-2 border-black rounded-sm text-black text-sm p-1 mr-2 w-full"
     @keyup="type"
     :placeholder="props.required ? '' : 'All Languages'"
 >
 
-<div class="border-2 border-black rounded h-16 bg-white text-black text-sm overflow-y-scroll">
+<div class="border-2 border-black rounded-sm h-16 bg-white text-black text-sm overflow-y-scroll">
     <div class="cursor-pointer">
     </div>
     <div v-for="language in logs.languages" class="cursor-pointer">
