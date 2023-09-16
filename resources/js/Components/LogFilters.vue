@@ -19,11 +19,11 @@ function changeTime() {
 
 <template>
 
-<div class="sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-1 lg:gap-0 border-l border-b border-black p-4 sm:mb-10">
+<div class="sm:grid sm:grid-cols-2 sm:gap-7 md:gap-10 lg:grid-cols-1 lg:gap-0 border-l border-b border-black p-4 sm:mb-10">
 
   <!-- frequency -->
-  <div class="mx-auto w-full mb-8 xl:w-5/6">
-    <span class="bg-gray-300">Frequency:</span>
+  <div class="mx-auto my-8 w-full xl:w-5/6">
+    <span class="inline-block bg-gray-300">Frequency:</span>
     <br>
     <input
         type="number"
@@ -36,14 +36,17 @@ function changeTime() {
   </div>
 
   <!-- time of day -->
-  <div class="mx-auto w-full mb-8 xl:w-5/6">
-    <label class="bg-gray-300">Time? <input type="checkbox" v-model="logs.filters.time_filter" @change="logs.updateLogs('time_filter')" class="mb-1 ml-4"></label>
+  <div class="mx-auto mb-8 w-full xl:w-5/6">
+    <label class="inline-block bg-gray-300 mr-3 mb-1.5">
+        Time?
+        <input type="checkbox" v-model="logs.filters.time_filter" @change="logs.updateLogs('time_filter')" class="">
+    </label>
     <div v-if="logs.filters.time_filter" class="ml-4">
       <input
           type="time"
           v-model="logs.filters.time"
           @blur="changeTime"
-          class="rounded-sm border-2 border-black p-1 text-black w-24"
+          class="rounded-sm border-2 border-black p-1 text-black w-24 my-2"
           :class="{'bg-gray-600': ! logs.filters.time_filter}"
           :disabled="logs.filters.make_time_now"
       >
@@ -51,10 +54,10 @@ function changeTime() {
 
 
       <br>
-      <label class="bg-gray-300">Now? <input type="checkbox" v-model="logs.filters.make_time_now" @change="logs.updateLogs('make_time_now')"></label>
+      <label class="inline-block bg-gray-300 my-1.5">Now? <input type="checkbox" v-model="logs.filters.make_time_now" @change="logs.updateLogs('make_time_now')"></label>
 
       <br>
-      Range, <label class="bg-gray-300">half-hour blocks? <input type="checkbox" v-model="logs.filters.half_hour_blocks" @change="changeTime"></label>
+      Range, <label class="inline-block bg-gray-300 my-1.5">half-hour blocks? <input type="checkbox" v-model="logs.filters.half_hour_blocks" @change="changeTime"></label>
       <br>
       <input type="range" min="1" max="6" v-model="logs.filters.time_range" @change="changeTime">
       <br>

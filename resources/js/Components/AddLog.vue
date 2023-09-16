@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import { base_url } from '@/base_url.js'
 import { logs } from '@/logs.js'
 import StationsDropDown from '@/Components/StationsDropDown.vue'
@@ -7,16 +7,21 @@ import LanguagesDropDown from '@/Components/LanguagesDropDown.vue'
 import ReceptionQuality from '@/Components/ReceptionQuality.vue'
 
 const frequencyBox = ref(null)
+const addLogDialogue = ref(null)
 
 async function addLog() {
 
-  await logs.addLog()
-  frequencyBox.value.focus()
+    await logs.addLog()
 
-  window.scrollTo(0, 150)
-
-
+    // after adding the log, scroll to top of the page and focus the frequency box
+    const addLogDialogue = document.getElementById('addLogDialogue')
+    addLogDialogue.scrollIntoView();
+    frequencyBox.value.focus()
 }
+
+onMounted(() => {
+    frequencyBox.value.focus()
+})
 
 </script>
 
@@ -24,21 +29,29 @@ async function addLog() {
 
 <form @submit.prevent="addLog()">
 
-<div class="sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-1 lg:gap-0 border-l border-b border-black p-4">
+<div id="addLogDialogue" ref="addLogDialogue" class="sm:grid sm:grid-cols-2 sm:gap-7 md:gap-10 lg:grid-cols-1 lg:gap-0 border-l border-b border-black p-4">
 
-  <div class="mx-auto w-full mb-8 xl:w-5/6">
+  <div class="mx-auto w-full mb-8 xl:w-5/6 mt-8">
 
     <span class="bg-gray-300">Frequency:</span>
       <br>
 
-      <input type="number" ref="frequencyBox" max="30000" min="100" maxlength="5" v-model="logs.newlog.frequency" class="border-2 border-black rounded-sm p-1 text-black w-full sm:inline">
+      <input
+          type="number"
+          ref="frequencyBox"
+          max="30000"
+          min="100"
+          maxlength="5"
+          v-model="logs.newlog.frequency"
+          class="border-2 border-black rounded-sm p-1 text-black w-1/2 sm:inline"
+      >
 
       <!-- button to check frequency with sw-info -->
       <button
       v-if="(logs.filters.station_type === 1 && logs.newlog.frequency >= 2000) || (logs.filters.station_type === 2 && logs.newlog.frequency >= 100)"
           @click="logs.checkFrequency"
           type="button"
-          class="border border-white text-white bg-gray-800 px-2 py-1 ml-2 rounded-sm"
+          class="border border-white text-white bg-gray-800 px-2 py-1 ml-6 rounded-sm"
       >CHECK</button>
 
       <a v-if="logs.newlog.frequency >= 100" class="block text-xs mt-1 underline" :href="base_url + 'shortWaveInfoData?frequency=' + logs.newlog.frequency + '&broadcasting_now=false'" target="_blank">[s-w.info]</a>
@@ -47,7 +60,7 @@ async function addLog() {
       <div v-if="logs.newlog.errors.frequency" class="text-sm text-red-300">Please add the frequency</div>
 
       <!-- frequencies matched from sw-info -->
-      <div v-if="logs.swinfoMatches.length > 0" class="border border-gray-500 p-2 rounded-sm my-5 text-sm">
+      <div v-if="logs.swinfoMatches.length > 0 && logs.frequencyToCheck === logs.newlog.frequency" class="border border-gray-500 p-2 rounded-sm my-5 text-sm">
           Shortwave.info found {{ logs.swinfoMatches.length }} stations on {{ logs.swinfoMatches[0].frequency }}kHz
           <div
               v-for="n in logs.swinfoMatches.length"

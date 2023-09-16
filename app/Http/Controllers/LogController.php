@@ -92,8 +92,8 @@ class LogController extends Controller
         $frequency = intval(request('frequency')) >= 100 && intval(request('frequency')) <= 30000 ? request('frequency') : 0;
         $weekday = intval(request('weekday')) >= 0 || intval(request('weekday')) <= 7 ? intval(request('weekday')) : 0;
 
-        if (request('time_filter') === true || request('time_filter') === 'true') $time_filter = true;
-        elseif (request('time_filter') === null || request('time_filter') === 'false' || request('time_filter') === false) $time_filter = false;
+        if (request('time_filter') === null || request('time_filter') === true || request('time_filter') === 'true') $time_filter = true;
+        elseif (request('time_filter') === 'false' || request('time_filter') === false) $time_filter = false;
 
         // $time = preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/', request('time')) ? request('time') : '';
 
@@ -119,10 +119,10 @@ class LogController extends Controller
         elseif (request('log_owners') === 'false' || request('log_owners') === false) $log_owners = false;
 
         if (in_array(request('order_by'), $this->order_by_options)) $order_by = request('order_by');
-        else $order_by = '`station_id`, `frequency`';
+        else $order_by = '`datetime`-DESC';
 
-        if (request('group_results') === null || request('group_results') === true || request('group_results') === 'true') $group_results = true;
-        elseif (request('group_results') === 'false' || request('group_results') === false) $group_results = false;
+        if (request('group_results') === true || request('group_results') === 'true') $group_results = true;
+        elseif (request('group_results') === null || request('group_results') === 'false' || request('group_results') === false) $group_results = false;
 
         return [
             'page' => $page,

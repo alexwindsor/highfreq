@@ -65,17 +65,17 @@ function pickProgramme(id, name) {
 
 <template>
 
-<span class="bg-gray-300">Station:</span><br>
 
+<span class="bg-gray-300 ml-12 sm:ml-0 sm:w-full">Station:</span><br>
 <input
     type="text"
     v-model="station_name"
-    class="border-2 border-black rounded-sm text-black text-sm p-1 mr-2 w-full"
+    class="border-2 border-black rounded-sm text-black text-sm p-1 w-3/4 ml-12 sm:ml-0 sm:w-full"
     :placeholder="required ? '' : 'All Stations'"
     @keyup="type('station')"
 >
 
-<div class="border-2 border-black rounded-sm h-16 bg-white text-black text-sm overflow-y-scroll">
+<div class="border-2 border-black rounded-sm h-16 bg-white text-black text-sm overflow-y-scroll w-3/4 ml-12 sm:ml-0 sm:w-full">
     <div v-for="station in logs.stations" class="cursor-pointer">
         <span
             v-if="station.name.toLowerCase().includes(station_name.toLowerCase())"
@@ -88,18 +88,25 @@ function pickProgramme(id, name) {
     </div>
 </div>
 
-<div :class="{'hidden': station_name.length === 0 || props.programmes === false}" class="mt-4">
-    Programme:<br>
+
+
+
+<div
+    class="mt-4 ml-12 w-3/4 sm:ml-0 sm:w-full mb-4"
+    :class="{'hidden': station_name.length === 0 || props.programmes === false}"
+>
+
+    <span class="bg-gray-300">Programme:</span><br>
 
     <input
         type="text"
         v-model="station_programme_name"
-        class="border-2 border-black rounded-sm text-black text-sm p-1 mr-2 w-full"
+        class="border-2 border-black rounded-sm text-black text-sm w-full"
         placeholder="n/a"
         @keyup="type('programme')"
     >
 
-    <div class="border-2 border-black rounded-sm h-16 bg-white text-black text-sm overflow-y-scroll">
+    <div class="border-2 border-black rounded-sm h-16 bg-white text-black text-sm overflow-y-scroll w-full">
         <div v-for="pickedStationProgramme in logs.pickedStationProgrammes" class="cursor-pointer">
             <span
                 v-if="pickedStationProgramme.name.toLowerCase().includes(station_programme_name?.toLowerCase())"

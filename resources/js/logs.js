@@ -29,6 +29,8 @@ export let logs = reactive({
         errors: {}
     },
 
+    frequencyToCheck: null,
+
     filters: {},
     filters_querystring: '',
 
@@ -46,12 +48,17 @@ export let logs = reactive({
 
     async checkFrequency() {
 
+        this.swinfoMatches = []
+        this.frequencyToCheck = null
+
         if(! this.newlog.frequency) return false
+
+        this.frequencyToCheck = this.newlog.frequency
 
         let route = this.filters.station_type === 1 ? 'swiDataRip' : 'logs'
 
         await axios.post(base_url + route + '/checkfrequency', {
-            frequency: this.newlog.frequency,
+            frequency: this.frequencyToCheck,
             time: this.newlog.datetime
         }).then(swInfo => {
             if (swInfo.data.length === 0) alert('No match found')
@@ -244,6 +251,24 @@ export let logs = reactive({
         }
 
         if (do_update) this.updateLogs(filter)
+    },
+
+    autoFilters(mode) {
+
+        this.filters.time_filter = true
+        this.filters.make_time_now = true
+
+        if (mode === 'add') {
+            this.filters.group_results = false
+            this.filters.order_by = '`datetime`-DESC'
+        }
+        else if (mode === 'browse') {
+            this.filters.group_results = true
+            this.filters.order_by = '`frequency`'
+        }
+
+        this.updateLogs()
+
     },
 
 

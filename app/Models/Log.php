@@ -43,7 +43,7 @@ class Log extends Model
         if (!$group_by) $logQuery->commentSearch($commentSearch);
         if ($group_by) $logQuery->groupBy(['logs.station_id', 'stations.name', 'stations.station_type_id', 'logs.station_programme_id', 'station_programmes.name', 'logs.frequency', 'logs.language_id', 'languages.name']);
 
-        return $logQuery->paginate(10);
+        return $logQuery->paginate(20);
     }
 
     protected function scopeUser(Builder $query, bool $logOwners): void
