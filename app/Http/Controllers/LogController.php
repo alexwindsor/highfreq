@@ -119,10 +119,10 @@ class LogController extends Controller
         elseif (request('log_owners') === 'false' || request('log_owners') === false) $log_owners = false;
 
         if (in_array(request('order_by'), $this->order_by_options)) $order_by = request('order_by');
-        else $order_by = '`station_id`, `frequency`';
+        else $order_by = '`datetime`-DESC';
 
-        if (request('group_results') === null || request('group_results') === true || request('group_results') === 'true') $group_results = true;
-        elseif (request('group_results') === 'false' || request('group_results') === false) $group_results = false;
+        if (request('group_results') === true || request('group_results') === 'true') $group_results = true;
+        elseif (request('group_results') === null || request('group_results') === 'false' || request('group_results') === false) $group_results = false;
 
         return [
             'page' => $page,

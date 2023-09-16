@@ -145,7 +145,7 @@ class SwInfoDataRip
             $rows[$rowcount]['station'] = trim($rows[$rowcount]['station']);
             if ($rows[$rowcount]['station'] === 'CHINA RADIO INTERNATIONA') $rows[$rowcount]['station'] = 'CHINA RADIO INTERNATIONAL';
             if ($rows[$rowcount]['station'] === "'''VOICE OF CHINA'' RADIO STATION'") $rows[$rowcount]['station'] = 'VOICE OF CHINA RADIO STATION';
-            
+
 
             // check the station against an array of stations that we are not interested in
             if (in_array(strtolower($rows[$rowcount]['station']), self::$blocked_stations)) continue;
@@ -200,7 +200,7 @@ class SwInfoDataRip
 
             // null placeholder for the programme that will be extracted from the 'station' string below
             $rows[$rowcount]['programme'] = null;
-  
+
             $rowcount++;
         }
 
@@ -209,7 +209,7 @@ class SwInfoDataRip
 
 
         $previous_station = [];
-        
+
         // compare each word in each station with each word in the previous station to see if it is a programme
         for ($i = 0; $i < count($rows); $i++) {
 
@@ -218,7 +218,7 @@ class SwInfoDataRip
             $rows[$i]['station_prefix'] = null;
 
             foreach (self::$prefixes as $prefix) {
-                if (strpos($rows[$i]['station'], $prefix) === 0) {
+                if (str_starts_with($rows[$i]['station'], $prefix)) {
                     $rows[$i]['station_prefix'] = $prefix . ' ';
                     $rows[$i]['station'] = str_replace($rows[$i]['station_prefix'], '', $rows[$i]['station']);
                     break;
@@ -227,7 +227,7 @@ class SwInfoDataRip
 
             // make an array of words that the station contains
             $this_station = explode(' ', $rows[$i]['station']);
-            
+
             if ($this_station === $previous_station) continue;
 
             $station = '';
@@ -236,7 +236,7 @@ class SwInfoDataRip
             // work out which has more words between this station and the previous
             $num_of_words = count($this_station) > count($previous_station) ? count($this_station) : count($previous_station);
 
-            
+
 
             for ($j = 0; $j < $num_of_words; $j++) {
 
@@ -258,7 +258,7 @@ class SwInfoDataRip
                     $programme .= $this_station[$j] . ' ';
                 }
             }
-            
+
             $rows[$i]['station'] = trim($station);
             $rows[$i]['programme'] = trim($programme);
 
@@ -305,7 +305,10 @@ class SwInfoDataRip
 
             $language_id = 1; // unknown or n/a
             if (! empty($row['language'])) {
-                $language = Language::firstOrCreate(['name' => $row['language']]);
+                $language = Language::firstOrCreate([
+                    'name' => $row['language'],
+                    'station_type_id' => 1
+                ]);
                 $language_id = $language->id;
             }
 

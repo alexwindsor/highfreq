@@ -43,12 +43,12 @@ function type(station_or_programme) {
         emit('programmeId', 0)
         emit('programmeName', '')
         logs.pickedStationProgrammes = []
-    } 
+    }
 
     else if (station_or_programme === 'programme') {
         emit('programmeId', 0)
         emit('programmeName', station_programme_name)
-    } 
+    }
 }
 
 function pickProgramme(id, name) {
@@ -58,26 +58,26 @@ function pickProgramme(id, name) {
 
 // watch(station_name, () => {
 //     type('station')
-// }) 
+// })
 
 
 </script>
 
 <template>
 
-Station:<br>
 
-<input 
-    type="text" 
-    v-model="station_name" 
-    class="border-2 border-black rounded text-black text-sm p-1 mr-2 w-full" 
+<span class="bg-gray-300 ml-12 sm:ml-0 sm:w-full">Station:</span><br>
+<input
+    type="text"
+    v-model="station_name"
+    class="border-2 border-black rounded-sm text-black text-sm p-1 w-3/4 ml-12 sm:ml-0 sm:w-full"
     :placeholder="required ? '' : 'All Stations'"
     @keyup="type('station')"
 >
 
-<div class="border-2 border-black rounded h-16 bg-white text-black text-sm overflow-y-scroll">
+<div class="border-2 border-black rounded-sm h-16 bg-white text-black text-sm overflow-y-scroll w-3/4 ml-12 sm:ml-0 sm:w-full">
     <div v-for="station in logs.stations" class="cursor-pointer">
-        <span 
+        <span
             v-if="station.name.toLowerCase().includes(station_name.toLowerCase())"
             class="inline-block w-full"
             :class="{'bg-black text-white': station.id === station_id}"
@@ -88,20 +88,27 @@ Station:<br>
     </div>
 </div>
 
-<div :class="{'hidden': station_name.length === 0 || props.programmes === false}" class="mt-4">
-    Programme:<br>
 
-    <input 
-        type="text" 
-        v-model="station_programme_name" 
-        class="border-2 border-black rounded text-black text-sm p-1 mr-2 w-full" 
+
+
+<div
+    class="mt-4 ml-12 w-3/4 sm:ml-0 sm:w-full mb-4"
+    :class="{'hidden': station_name.length === 0 || props.programmes === false}"
+>
+
+    <span class="bg-gray-300">Programme:</span><br>
+
+    <input
+        type="text"
+        v-model="station_programme_name"
+        class="border-2 border-black rounded-sm text-black text-sm w-full"
         placeholder="n/a"
         @keyup="type('programme')"
     >
 
-    <div class="border-2 border-black rounded h-16 bg-white text-black text-sm overflow-y-scroll">
+    <div class="border-2 border-black rounded-sm h-16 bg-white text-black text-sm overflow-y-scroll w-full">
         <div v-for="pickedStationProgramme in logs.pickedStationProgrammes" class="cursor-pointer">
-            <span 
+            <span
                 v-if="pickedStationProgramme.name.toLowerCase().includes(station_programme_name?.toLowerCase())"
                 class="inline-block w-full"
                 :class="{'bg-black text-white': pickedStationProgramme.id === station_programme_id}"
