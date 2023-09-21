@@ -215,11 +215,11 @@ onMounted(() => {
                 <span class="text-sm mb-1 mt-2 mx-2">Auto-load filters:</span>
 
                 <button
-                    class="bg-gray-400 ml-2 px-1 rounded text-xs border border-black"
+                    class="bg-gray-500 text-white ml-2 px-1 rounded text-xs border-2 border-black"
                     @click="logs.autoFilters('add')"
                 >add logs</button>
                 <button
-                    class="bg-gray-400 ml-1 px-1 rounded text-xs border border-black"
+                    class="bg-gray-500 text-white ml-1 px-1 rounded text-xs border-2 border-black"
                     @click="logs.autoFilters('browse')"
                 >browse logs</button>
 
