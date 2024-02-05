@@ -135,6 +135,7 @@ class SwInfoDataRip
             $rows[$rowcount]['station'] = substr($row, strpos($row, '>') + 1, strpos($row, '</td><td>') - strpos($row, '>') - 1);
             $rows[$rowcount]['station'] = strip_tags($rows[$rowcount]['station']);
             $rows[$rowcount]['station'] = html_entity_decode($rows[$rowcount]['station']);
+            if ($rows[$rowcount]['station'] === '') continue;
             $rows[$rowcount]['station'] = strtoupper($rows[$rowcount]['station']);
             $rows[$rowcount]['station'] = str_replace('R.', 'RADIO ', $rows[$rowcount]['station']);
             $rows[$rowcount]['station'] = str_replace('VO ', 'VOICE OF ', $rows[$rowcount]['station']);
@@ -145,7 +146,6 @@ class SwInfoDataRip
             $rows[$rowcount]['station'] = trim($rows[$rowcount]['station']);
             if ($rows[$rowcount]['station'] === 'CHINA RADIO INTERNATIONA') $rows[$rowcount]['station'] = 'CHINA RADIO INTERNATIONAL';
             if ($rows[$rowcount]['station'] === "'''VOICE OF CHINA'' RADIO STATION'") $rows[$rowcount]['station'] = 'VOICE OF CHINA RADIO STATION';
-
 
             // check the station against an array of stations that we are not interested in
             if (in_array(strtolower($rows[$rowcount]['station']), self::$blocked_stations)) continue;
@@ -284,13 +284,13 @@ class SwInfoDataRip
             if ($rows[$i]['station_prefix']) $rows[$i]['station'] = $rows[$i]['station_prefix'] . $rows[$i]['station'];
             // echo out the rows for debugging:
             echo $rows[$i]['station'] . ' <span style="color:gray">' . $rows[$i]['programme'] . '</span><br>';
-            echo ' <span style="font-size:80%">' . $rows[$i]['language'] . '</span><br>';
+            // echo ' <span style="font-size:80%">' . $rows[$i]['language'] . '</span><br>';
         }
 
         // die();
 
 
-
+        // dd($rows);
 
         // insert the rows into the database
         foreach ($rows as $row) {
