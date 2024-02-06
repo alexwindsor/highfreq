@@ -149,9 +149,12 @@ class LogController extends Controller
 
     public function store() {
 
+        // dd(request());
+
         $fields = request()->validate([
             'frequency' => ['required', 'integer', 'min:100', 'max:30000'],
             'datetime' => ['required',  'date'],
+            'make_time_now' => ['required',  'boolean'],
             'station_type' => ['required', 'integer', 'min:1', 'max:2'],
             'station_id' => ['required', 'integer', 'min:0'],
             'station_name' => ['required_if:station_id,0', 'string', 'min:2'],
@@ -177,10 +180,13 @@ class LogController extends Controller
 
         // check if we need a new language
         if ($fields['language_id'] === 0 && !empty($fields['language_name'])) {
-            if ($fields['station_type'] === 2) $fields['language_name'] = '.' . $fields['language_name'];
-            $language = Language::firstOrCreate(['name' => ucwords($fields['language_name']), 'station_type_id' => $fields['station_type']]);
+            if ($fields['station_type'] === 2) $fields['language_name'] = '.' . ucwords($fields['language_name']);
+            $language = Language::firstOrCreate(['name' => $fields['language_name'], 'station_type_id' => $fields['station_type']]);
             $fields['language_id'] = $language->id;
         }
+
+        // check if we need to create a datetime for now
+        if ($fields['make_time_now']) $fields['datetime'] = date('Y-m-d H:i:s');
 
         if ($fields['station_programme_id'] === 0) $fields['station_programme_id'] = null;
         if (strlen($fields['comment']) === 0) $fields['comment'] = null;
