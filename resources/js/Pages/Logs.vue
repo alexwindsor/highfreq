@@ -299,9 +299,6 @@ onMounted(() => {
                 <div class="ml-3 mb-5 text-sm">
                     {{ logs.logs.total }} <b>{{ logs.filters.group_results ? 'grouped' : 'individual' }}</b> logs found between {{ logs.filters.bottom_time_range }}z and {{ logs.filters.top_time_range }}z.
                     <div v-if="logs.logs.total > 0" class="inline-block">
-                        <!--                        <div v-if="logs.logs.total > logs.logs.per_page">-->
-                        <!--                            Page {{ logs.logs.current_page }} of {{ logs.logs.last_page }}-->
-                        <!--                        </div>-->
                         Showing logs {{ logs.logs.from }} to {{ logs.logs.to }}
                     </div>
                 </div>

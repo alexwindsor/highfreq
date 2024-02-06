@@ -43,7 +43,7 @@ function getHumanDate(datetime) {
 <template>
 
     <div
-        class="flex flex-wrap sm:grid mb-3 sm:mb-2 border-t border-black"
+        class="flex flex-wrap sm:grid mb-5 sm:mb-4 border-t-2 border-black"
         :class="{
         'sm:grid-cols-8 sm:w-auto': !logs.filters.group_results && logs.edit_mode !== log.id,
         'sm:grid-cols-5': logs.filters.group_results,
