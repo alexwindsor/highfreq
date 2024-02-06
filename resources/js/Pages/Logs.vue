@@ -6,6 +6,7 @@ import {logs} from '@/logs.js'
 import LogsLayout from '@/Pages/LogsLayout.vue'
 import AddLog from '@/Components/AddLog.vue'
 import LogFilters from '@/Components/LogFilters.vue'
+import SortLogs from '@/Components/SortLogs.vue'
 import LogRow from '@/Components/LogRow.vue'
 import Pagination from '@/Components/Pagination.vue'
 
@@ -128,10 +129,16 @@ function toggleFilterAdd(box) {
 
     if (box === 'add') {
         logs.showHideFilterLogs = false
+        logs.showHideSortLogs = false
         logs.showHideAddLog = !logs.showHideAddLog
     } else if (box === 'filter') {
         logs.showHideAddLog = false
+        logs.showHideSortLogs = false
         logs.showHideFilterLogs = !logs.showHideFilterLogs
+    } else if (box === 'sort') {
+        logs.showHideAddLog = false
+        logs.showHideFilterLogs = false
+        logs.showHideSortLogs = !logs.showHideSortLogs
     }
 }
 
@@ -169,23 +176,34 @@ onMounted(() => {
                 High Frequency Radio Logs
             </Link>
             <button
-                class="text-xl p-2 mr-2 border-black"
+                class="text-xl p-1 border-black"
                 :class="{
-          'border-4 ' : logs.showHideAddLog,
-          'border' : ! logs.showHideAddLog}"
+                'border-4 ' : logs.showHideAddLog,
+                'border' : ! logs.showHideAddLog}"
                 @click="toggleFilterAdd('add')"
             >
                 Add Log
             </button>
 
             <button
-                class="text-xl p-2 border-black"
+                class="text-xl p-1 mx-2 border-black"
                 :class="{
-          'border-4' : logs.showHideFilterLogs,
-          'border' : ! logs.showHideFilterLogs}"
+                'border-4' : logs.showHideFilterLogs,
+                'border' : ! logs.showHideFilterLogs}"
                 @click="toggleFilterAdd('filter')"
             >
                 Filter Logs
+            </button>
+
+            <button
+                class="text-xl p-1 border-black"
+                :class="{
+                    'border-4' : logs.showHideSortLogs,
+                    'border' : ! logs.showHideSortLogs
+                }"
+                @click="toggleFilterAdd('sort')"
+            >
+                Sort Logs
             </button>
         </div>
 
@@ -226,6 +244,7 @@ onMounted(() => {
 
                 <br><br>
 
+                <!-- Add Log -->
                 <button
                     class="hidden sm:block text-xl p-2 mr-2"
                     :class="{
@@ -235,13 +254,12 @@ onMounted(() => {
                 >
                     Add Log
                 </button>
-
-
                 <AddLog
                     v-if="logs.showHideAddLog"
                     class="fixed top-16 bottom-0 left-0 right-0 overflow-y-scroll bg-white sm:bg-transparent sm:overflow-y-auto z-10 sm:static"
                 />
 
+                <!-- Filter Logs -->
                 <button
                     class="hidden sm:block text-xl p-2 mt-4"
                     :class="{
@@ -252,10 +270,24 @@ onMounted(() => {
                 >
                     Filter Logs
                 </button>
-
-
                 <LogFilters
                     v-if="logs.showHideFilterLogs"
+                    class="fixed top-16 bottom-0 left-0 right-0 overflow-y-scroll bg-white sm:h-auto sm:bg-transparent sm:overflow-y-auto z-10 sm:static"
+                />
+
+                <!-- Sort Logs -->
+                <button
+                    class="hidden sm:block text-xl p-2 mt-4"
+                    :class="{
+                      'border border-black sm:mb-4' : ! logs.showHideSortLogs,
+                      'border-t border-x border-black' : logs.showHideSortLogs
+                    }"
+                    @click="logs.showHideSortLogs = ! logs.showHideSortLogs"
+                >
+                    Sort Logs
+                </button>
+                <SortLogs
+                    v-if="logs.showHideSortLogs"
                     class="fixed top-16 bottom-0 left-0 right-0 overflow-y-scroll bg-white sm:h-auto sm:bg-transparent sm:overflow-y-auto z-10 sm:static"
                 />
 
@@ -267,9 +299,6 @@ onMounted(() => {
                 <div class="ml-3 mb-5 text-sm">
                     {{ logs.logs.total }} <b>{{ logs.filters.group_results ? 'grouped' : 'individual' }}</b> logs found between {{ logs.filters.bottom_time_range }}z and {{ logs.filters.top_time_range }}z.
                     <div v-if="logs.logs.total > 0" class="inline-block">
-                        <!--                        <div v-if="logs.logs.total > logs.logs.per_page">-->
-                        <!--                            Page {{ logs.logs.current_page }} of {{ logs.logs.last_page }}-->
-                        <!--                        </div>-->
                         Showing logs {{ logs.logs.from }} to {{ logs.logs.to }}
                     </div>
                 </div>
