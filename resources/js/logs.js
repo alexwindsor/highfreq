@@ -7,6 +7,7 @@ export let logs = reactive({
 
     showHideAddLog: false,
     showHideFilterLogs: false,
+    showHideSortLogs: false,
 
     today: null,
     mode: 'browse',
