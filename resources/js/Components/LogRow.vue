@@ -247,7 +247,7 @@ function getHumanDate(datetime) {
                 :href="base_url + 'shortWaveInfoData?frequency=' + log.frequency + '&broadcasting_now=false&station_id=' + log.station_id + '&language_id=' + log.language_id"
                 target="_blank"
             >
-                short-wave.info
+                check
             </a>
             |
             <a
@@ -282,7 +282,7 @@ function getHumanDate(datetime) {
                 :href="base_url + 'shortWaveInfoData?frequency=' + log.frequency + '&broadcasting_now=false&station_id=' + log.station_id + '&language_id=' + log.language_id"
                 target="_blank"
             >
-                short-wave.info
+                check
             </a>
             |
             <a
