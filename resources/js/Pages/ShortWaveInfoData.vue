@@ -70,11 +70,15 @@ onMounted(() => {
 
 <template>
 
-<Head title="HF / short-wave.info" />
-<Layout page="Short-Wave.info Listings" :user="user">
+<Head title="HF / broadcasts" />
+<Layout page="Current Broadcasts" :user="user">
+
+    <div class="text-xs sm:text-sm lg:text-base">
+        This data is taken from the <a href="https://short-wave.info" class="underline" target="_blank"><i>amazing</i> short-wave.info</a> website. The data is highly reliable and is updated every couple of months. Many thanks to their hard work, experience and dedication for this data.
+    </div>
 
 
-    <div class="mb-10 sm:grid sm:grid-cols-12 sm:gap-1 md:gap-2 lg:gap-4">
+    <div class="mt-5 mb-10 sm:grid sm:grid-cols-12 sm:gap-1 md:gap-2 lg:gap-4">
 
         <div class="mb-1 rounded bg-gray-700 p-2 text-center text-white sm:col-span-6 sm:mb-0 sm:p-3 lg:col-span-2">
             <div class="mx-auto inline-block w-full text-left xl:w-2/3">

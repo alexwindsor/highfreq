@@ -48,13 +48,22 @@ onMounted(() => {
 
       <!-- button to check frequency with sw-info -->
       <button
-      v-if="(logs.filters.station_type === 1 && logs.newlog.frequency >= 2000) || (logs.filters.station_type === 2 && logs.newlog.frequency >= 100)"
-          @click="logs.checkFrequency"
-          type="button"
-          class="border border-white text-white bg-gray-800 px-2 py-1 ml-6 rounded-sm"
-      >CHECK</button>
+        v-if="(logs.filters.station_type === 1 && logs.newlog.frequency >= 2000) || (logs.filters.station_type === 2 && logs.newlog.frequency >= 100)"
+        @click="logs.checkFrequency"
+        type="button"
+        class="border border-white text-white bg-gray-800 px-2 py-1 ml-6 rounded-sm"
+      >
+          CHECK
+      </button>
 
-      <a v-if="logs.newlog.frequency >= 100" class="block text-xs mt-1 underline" :href="base_url + 'shortWaveInfoData?frequency=' + logs.newlog.frequency + '&broadcasting_now=false'" target="_blank">[s-w.info]</a>
+      <a
+          v-if="logs.newlog.frequency >= 100"
+          class="block text-xs mt-1 underline"
+          :href="base_url + 'shortWaveInfoData?frequency=' + logs.newlog.frequency + '&broadcasting_now=false'"
+          target="_blank"
+      >
+          [check]
+      </a>
 
       <!-- error: missing frequency -->
       <div v-if="logs.newlog.errors.frequency" class="text-sm text-red-300">Please add the frequency</div>

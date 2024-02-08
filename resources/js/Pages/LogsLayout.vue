@@ -33,7 +33,7 @@ defineProps({
             </div>
 
             <div class="text-center">
-                <Link :href="base_url + 'shortWaveInfoData'">s-w.info</Link>
+                <Link :href="base_url + 'shortWaveInfoData'">broadcast stations</Link>
             </div>
 
             <div class="text-center">
@@ -62,7 +62,7 @@ defineProps({
             <div class="ml-16">
                 <Link :href="base_url + 'logs'" class="m-4 inline-block">logs<span v-if="! user" class="text-sm"> (login required)</span>
                 </Link>
-                <Link :href="base_url + 'shortWaveInfoData'" class="m-4 inline-block">s-w.info</Link>
+                <Link :href="base_url + 'shortWaveInfoData'" class="m-4 inline-block">broadcast stations</Link>
                 <Link :href="base_url + 'bands'" class="m-4 inline-block">bands</Link>
             </div>
 
