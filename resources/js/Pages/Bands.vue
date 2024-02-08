@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
-import { reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import Layout from '@/Pages/Layout.vue'
 import { base_url } from '@/base_url.js'
 
@@ -8,8 +8,12 @@ defineProps({
     user: Object,
     broadcast_bands: Array,
     amateur_bands: Array,
+    both_aeronautical_bands: Array,
+    civil_aeronautical_bands: Array,
+    military_aeronautical_bands: Array,
     broadcast_colour: String,
     amateur_colour: String,
+    aeronautical_colour: String,
 })
 
 const band = reactive({
@@ -17,37 +21,20 @@ const band = reactive({
     bands: null
 })
 
-const bandscale = reactive({
-    html: '',
-    zoom: 5
-})
-
+const aeronautical_bands = ref('both')
 
 function checkFrequency() {
 
-    // if (band.frequency < 100 || band.frequency > 30000) return false
+    if (band.frequency < 100 || band.frequency > 30000) {
+        band.bands = null
+        return false
+    }
 
     axios.post(base_url + 'bands/getBand/' + band.frequency).then((result) => {
         band.bands = result.data
     })
 }
 
-
-function changeBandZoom() {
-
-    // console.log(base_url + 'bands/changeBandZoom')
-    // console.log(bandscale.zoom)
-
-    axios.post(base_url + 'bands/changeBandZoom', {zoom: bandscale.zoom}).then(band_html => {
-        bandscale.html = band_html.data
-    })
-    // console.log(bandscale.html)
-}
-
-
-onMounted(() => {
-    changeBandZoom()
-})
 
 
 </script>
@@ -57,51 +44,121 @@ onMounted(() => {
 <Head title="HF / bands" />
 <Layout page="Shortwave Bands" :user="user">
 
-On this page I am experimenting with different ways to visualise the various bands in the HF range (0 - 30000kHz). It is 
-
-<br><br>
-Zoom : {{ (30000 / (bandscale.zoom * 1000)).toFixed(2) }}px per kHz ({{ bandscale.zoom * 1000 }}px wide)
-<input type="range" min="1" max="30" v-model="bandscale.zoom" @change="changeBandZoom" class="block w-full sm:w-2/3 lg:w-1/2 xl:w-1/3">
-
-<!-- bands display -->
-<div class="grid grid-cols-1 grid-rows-3 gap-0 w-full h-[240px] my-5 overflow-x-scroll whitespace-nowrap bg-gray-300 border border-black rounded-sm" v-html="bandscale.html"></div>
-<!-- ------------- -->
-
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-12">
-    <div class="col-span-2 order-1 md:order-3 md:col-span-2 lg:col-span-2 lg:pl-20 my-auto">
-        <br><br>
-        Check a frequency :<br>
-        <input type="number" v-model="band.frequency" min="100" max="30000" maxlength="5" class="border border-black rounded p-1" @keyup="checkFrequency">
-    </div>
-
-    <div class="col-span-2 order-2 md:order-4 md:col-span-2 lg:col-span-2 lg:pl-20">
-        <div v-if="band.bands">
-        {{ band.bands.frequency }}
-        <br>
-        {{ band.bands.wave }}
-        <br>
-        <span v-if="band.bands.metre">{{ band.bands.metre[0] }} on the {{ band.bands.metre[1] }} band</span>
-    </div>
-    </div>
+<div class="overflow-x-scroll">
+    <div class="grid grid-cols-4 mt-8 lg:mx-4 xl:mx-20 min-w-[800px]">
+        <div class="m-1 p-1 border-t border-black min-w-[150px]">
+            <br><br>
+            Check a frequency :<br>
+            <input type="number"
+                   v-model="band.frequency"
+                   min="100"
+                   max="30000"
+                   maxlength="5"
+                   class="block border border-black rounded p-1 mt-2 mb-8 w-[180px]"
+                   @keyup="checkFrequency"
+            >
 
 
-    <div class="order-3 md:order-1 md:row-span-2 m-1 p-1 border-t border-black">
-        Broadcast Bands:
-        <div v-for="broadcast_band in broadcast_bands" class="m-1 p-1 text-sm" :style="'background-color:' + broadcast_colour + ';'">
-            {{ broadcast_band[0] }} - {{ broadcast_band[1] }}<br>
-            {{ broadcast_band[2] }}
+            <span v-if="band.bands?.wave" class="mt-8 text-lg">
+                {{ band.bands.wave }}
+            </span>
+            <span v-if="band.bands?.wave">
+                [ {{ band.bands.frequency }} ]
+            </span>
+
+            <div v-if="band.bands?.metre" class="mt-2 text-lg">
+                {{ band.bands?.metre[0] }} on the
+                <span class="font-bold capitalize">{{ band.bands?.metre[1] }}</span> band
+            </div>
+
+            <div v-if="band.bands?.aeronautical" class="mt-2 text-lg">
+                <span class="font-bold capitalize">{{ band.bands?.aeronautical }}</span> band
+            </div>
+
         </div>
-    </div>
 
-    <div class="order-4 md:order-2 md:row-span-2 m-1 p-1 border-t border-black">
-        Amateur Bands:
-        <div v-for="amateur_band in amateur_bands" class="m-1 p-1 text-sm" :style="'background-color:' + amateur_colour + ';'">
-            {{ amateur_band[0] }} - {{ amateur_band[1] }}<br>
-            {{ amateur_band[2] }}
+        <div class="m-1 p-1 border-t border-black min-w-[150px]">
+            Broadcast Bands:
+            <div v-for="broadcast_band in broadcast_bands" class="m-1 p-1 text-sm h-[50px]" :style="'background-color:' + broadcast_colour + ';'">
+                {{ broadcast_band[0] }} - {{ broadcast_band[1] }}<br>
+                {{ broadcast_band[2] }}
+            </div>
         </div>
+
+        <div class="m-1 p-1 border-t border-black min-w-[150px]">
+            Amateur Bands:
+            <div v-for="amateur_band in amateur_bands" class="m-1 p-1 text-sm h-[50px]" :style="'background-color:' + amateur_colour + ';'">
+                {{ amateur_band[0] }} - {{ amateur_band[1] }}<br>
+                {{ amateur_band[2] }}
+            </div>
+        </div>
+
+        <div class="m-1 p-1 border-t border-black min-w-[150px]">
+            Aeronautical Bands:
+
+            <br>
+
+            <button
+                class="border border-black rounded mx-1 my-2 w-[50px] text-xs"
+                :class="{
+                    'bg-white text-black': aeronautical_bands !== 'civil',
+                    'bg-black text-white': aeronautical_bands === 'civil'
+                }"
+                @click="aeronautical_bands = 'civil'"
+            >
+                Civil
+            </button>
+            <button
+                class="border border-black rounded mx-1 my-2 w-[50px] text-xs"
+                :class="{
+                    'bg-white text-black': aeronautical_bands !== 'military',
+                    'bg-black text-white': aeronautical_bands === 'military'
+                }"
+                @click="aeronautical_bands = 'military'"
+            >
+                Military
+            </button>
+            <button
+                class="border border-black rounded mx-1 my-2 w-[50px] text-xs"
+                :class="{
+                    'bg-white text-black': aeronautical_bands !== 'both',
+                    'bg-black text-white': aeronautical_bands === 'both'
+                }"
+                @click="aeronautical_bands = 'both'"
+            >
+                Both
+            </button>
+
+            <div
+                v-if="aeronautical_bands === 'both'"
+                v-for="aeronautical_band in both_aeronautical_bands"
+                class="flex items-center m-1 p-1 text-sm h-[50px]"
+                :style="'background-color:' + aeronautical_colour + ';'"
+            >
+                {{ aeronautical_band[0] }} - {{ aeronautical_band[1] }}
+            </div>
+
+            <div
+                v-if="aeronautical_bands === 'civil'"
+                v-for="aeronautical_band in civil_aeronautical_bands"
+                class="flex items-center m-1 p-1 text-sm h-[50px]"
+                :style="'background-color:' + aeronautical_colour + ';'"
+            >
+                {{ aeronautical_band[0] }} - {{ aeronautical_band[1] }}
+            </div>
+
+            <div
+                v-if="aeronautical_bands === 'military'"
+                v-for="aeronautical_band in military_aeronautical_bands"
+                class="flex items-center m-1 p-1 text-sm h-[50px]"
+                :style="'background-color:' + aeronautical_colour + ';'"
+            >
+                {{ aeronautical_band[0] }} - {{ aeronautical_band[1] }}
+            </div>
+        </div>
+
     </div>
 </div>
-
 
 
 
