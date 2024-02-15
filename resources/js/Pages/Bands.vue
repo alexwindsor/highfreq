@@ -25,13 +25,15 @@ const aeronautical_bands = ref('both')
 
 function checkFrequency() {
 
-    if (band.frequency < 100 || band.frequency > 30000) {
+    if (band.frequency < 30 || band.frequency > 30000) {
         band.bands = null
+        console.log('null!')
         return false
     }
 
     axios.post(base_url + 'bands/getBand/' + band.frequency).then((result) => {
         band.bands = result.data
+        console.log(band.bands)
     })
 }
 
@@ -47,6 +49,57 @@ function checkFrequency() {
 <div class="overflow-x-scroll">
     <div class="grid grid-cols-4 mt-8 lg:mx-4 xl:mx-20 min-w-[800px]">
         <div class="m-1 p-1 border-t border-black min-w-[150px]">
+
+            <div class="grid grid-cols-2 gap-1 mr-6 mt-6 text-xs sm:text-sm">
+                <div class="bg-gray-200 p-1 rounded-sm">
+                    Low Frequency [LF]:
+                </div>
+
+                <div class="bg-gray-200 p-1 rounded-sm">
+                    30 - 300 kHz
+                </div>
+
+                <div class="bg-gray-200 p-1 rounded-sm">
+                    Medium Frequency [MF]:
+                </div>
+
+                <div class="bg-gray-200 p-1 rounded-sm">
+                    300 - 3000 kHz
+                </div>
+
+                <div class="bg-gray-200 p-1 rounded-sm mb-3">
+                    High Frequency [HF]:
+                </div>
+
+                <div class="bg-gray-200 p-1 rounded-sm mb-3">
+                    3000 - 30000 kHz
+                </div>
+
+                <div class="bg-gray-200 p-1 rounded-sm">
+                    Long Wave (LW):
+                </div>
+
+                <div class="bg-gray-200 p-1 rounded-sm">
+                    148.5 - 283.5 kHz
+                </div>
+
+                <div class="bg-gray-200 p-1 rounded-sm">
+                    Medium Wave (MW):
+                </div>
+
+                <div class="bg-gray-200 p-1 rounded-sm">
+                    531 - 1701 kHz
+                </div>
+
+                <div class="bg-gray-200 p-1 rounded-sm">
+                    Shortwave (SW):
+                </div>
+
+                <div class="bg-gray-200 p-1 rounded-sm">
+                    3000 - 30000 kHz
+                </div>
+            </div>
+
             <br><br>
             Check a frequency :<br>
             <input type="number"
@@ -60,10 +113,10 @@ function checkFrequency() {
 
 
             <span v-if="band.bands?.wave" class="mt-8 text-lg">
-                {{ band.bands.wave }}
+                [ {{ band.bands.wave }} ]
             </span>
-            <span v-if="band.bands?.wave">
-                [ {{ band.bands.frequency }} ]
+            <span v-if="band.bands?.frequency" class="mt-8 text-lg">
+                ( {{ band.bands.frequency }} )
             </span>
 
             <div v-if="band.bands?.metre" class="mt-2 text-lg">
@@ -79,17 +132,30 @@ function checkFrequency() {
 
         <div class="m-1 p-1 border-t border-black min-w-[150px]">
             Broadcast Bands:
-            <div v-for="broadcast_band in broadcast_bands" class="m-1 p-1 text-sm h-[50px]" :style="'background-color:' + broadcast_colour + ';'">
-                {{ broadcast_band[0] }} - {{ broadcast_band[1] }}<br>
-                {{ broadcast_band[2] }}
+            <div v-for="broadcast_band in broadcast_bands">
+                <div
+                    class="m-1 p-1 text-sm h-[50px]"
+                    :class="{'border-2 border-black' : band.frequency >= broadcast_band[0] && band.frequency < broadcast_band[1]}"
+                    :style="'background-color:' + broadcast_colour + ';'"
+                >
+                    {{ broadcast_band[0] }} - {{ broadcast_band[1] }} kHz<br>
+                    {{ broadcast_band[2] }}
+                </div>
             </div>
         </div>
 
         <div class="m-1 p-1 border-t border-black min-w-[150px]">
             Amateur Bands:
-            <div v-for="amateur_band in amateur_bands" class="m-1 p-1 text-sm h-[50px]" :style="'background-color:' + amateur_colour + ';'">
-                {{ amateur_band[0] }} - {{ amateur_band[1] }}<br>
-                {{ amateur_band[2] }}
+            <div v-for="amateur_band in amateur_bands">
+                <div
+                    class="m-1 p-1 text-sm h-[50px]"
+                    :class="{'border-2 border-black' : band.frequency >= amateur_band[0] && band.frequency < amateur_band[1]}"
+                    :style="'background-color:' + amateur_colour + ';'"
+                >
+                    {{ amateur_band[0] }} - {{ amateur_band[1] }} kHz<br>
+                    {{ amateur_band[2] }}
+                </div>
+
             </div>
         </div>
 
@@ -132,28 +198,40 @@ function checkFrequency() {
             <div
                 v-if="aeronautical_bands === 'both'"
                 v-for="aeronautical_band in both_aeronautical_bands"
-                class="flex items-center m-1 p-1 text-sm h-[50px]"
-                :style="'background-color:' + aeronautical_colour + ';'"
             >
-                {{ aeronautical_band[0] }} - {{ aeronautical_band[1] }}
+                <div
+                    class="flex items-center m-1 p-1 text-sm h-[50px]"
+                    :style="'background-color:' + aeronautical_colour + ';'"
+                    :class="{'border-2 border-black' : band.frequency >= aeronautical_band[0] && band.frequency < aeronautical_band[1]}"
+                >
+                    {{ aeronautical_band[0] }} - {{ aeronautical_band[1] }} kHz
+                </div>
             </div>
 
             <div
                 v-if="aeronautical_bands === 'civil'"
                 v-for="aeronautical_band in civil_aeronautical_bands"
-                class="flex items-center m-1 p-1 text-sm h-[50px]"
-                :style="'background-color:' + aeronautical_colour + ';'"
             >
-                {{ aeronautical_band[0] }} - {{ aeronautical_band[1] }}
+                <div
+                    class="flex items-center m-1 p-1 text-sm h-[50px]"
+                    :style="'background-color:' + aeronautical_colour + ';'"
+                    :class="{'border-2 border-black' : band.frequency >= aeronautical_band[0] && band.frequency < aeronautical_band[1]}"
+                >
+                    {{ aeronautical_band[0] }} - {{ aeronautical_band[1] }} kHz
+                </div>
             </div>
 
             <div
                 v-if="aeronautical_bands === 'military'"
                 v-for="aeronautical_band in military_aeronautical_bands"
-                class="flex items-center m-1 p-1 text-sm h-[50px]"
-                :style="'background-color:' + aeronautical_colour + ';'"
             >
-                {{ aeronautical_band[0] }} - {{ aeronautical_band[1] }}
+                <div
+                    class="flex items-center m-1 p-1 text-sm h-[50px]"
+                    :style="'background-color:' + aeronautical_colour + ';'"
+                    :class="{'border-2 border-black' : band.frequency >= aeronautical_band[0] && band.frequency < aeronautical_band[1]}"
+                >
+                    {{ aeronautical_band[0] }} - {{ aeronautical_band[1] }} kHz
+                </div>
             </div>
         </div>
 

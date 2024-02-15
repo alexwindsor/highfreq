@@ -71,7 +71,7 @@ Route::delete('/delete_account', [UserController::class, 'destroy'])->middleware
 // TO DO :
 
 /*
-fix deletion of orphaned broadcast stations / station programmes on sw-info scrape
+
 prevent logging the same frequency within 30 minutes / 30 minute block by same user
 add log filter for matching with sw-info data
 implement headless ui
@@ -87,6 +87,7 @@ create crud page for updating utility stations
 
 ---
 done:
+fix deletion of orphaned broadcast stations / station programmes on sw-info scrape
 update bands page with aeronautical bands and tidy up
 make logs recorded by the second, not by the minute
 take log orders out of filter and into their own dropdown

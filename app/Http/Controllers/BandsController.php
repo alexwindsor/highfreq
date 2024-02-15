@@ -33,21 +33,37 @@ class BandsController extends Controller
 
     public function getBand($frequency) {
 
+        if ($frequency < 30 || $frequency > 30000) return false;
+
         $frequency_band = null;
         $wave_band = null;
         $aeronautical_wave_band = null;
         $metre_band = null;
 
+        // dd(config('hf_bands.low_frequency'));
+
 
         // work out whether the frequency is LF, MF or HF
-        if ($frequency >= config('hf_bands.low_frequency')[0] && $frequency < config('hf_bands.low_frequency')[1]) $frequency_band = 'LF';
-        elseif ($frequency >= config('hf_bands.medium_frequency')[0] && $frequency < config('hf_bands.medium_frequency')[1]) $frequency_band = 'MF';
-        elseif ($frequency >= config('hf_bands.high_frequency')[0] && $frequency < config('hf_bands.high_frequency')[1]) $frequency_band = 'HF';
+        if ($frequency >= config('hf_bands.low_frequency')[0] && $frequency < config('hf_bands.low_frequency')[1]) {
+            $frequency_band = 'LF';
+        }
+        elseif ($frequency >= config('hf_bands.medium_frequency')[0] && $frequency < config('hf_bands.medium_frequency')[1]) {
+            $frequency_band = 'MF';
+        }
+        elseif ($frequency >= config('hf_bands.high_frequency')[0] && $frequency < config('hf_bands.high_frequency')[1]) {
+            $frequency_band = 'HF';
+        }
 
         // check whether the frequency comes within longwave, mediumwave or shortwave
-        if ($frequency >= config('hf_bands.longwave')[0] && $frequency < config('hf_bands.longwave')[1]) $wave_band = 'Longwave';
-        elseif ($frequency >= config('hf_bands.mediumwave')[0] && $frequency < config('hf_bands.mediumwave')[1]) $wave_band = 'Medium Wave';
-        elseif ($frequency >= config('hf_bands.shortwave')[0] && $frequency < config('hf_bands.shortwave')[1]) $wave_band = 'Short Wave';
+        if ($frequency >= config('hf_bands.longwave')[0] && $frequency < config('hf_bands.longwave')[1]) {
+            $wave_band = 'LW';
+        }
+        elseif ($frequency >= config('hf_bands.mediumwave')[0] && $frequency < config('hf_bands.mediumwave')[1]) {
+            $wave_band = 'MW';
+        }
+        elseif ($frequency >= config('hf_bands.shortwave')[0] && $frequency < config('hf_bands.shortwave')[1]) {
+            $wave_band = 'SW';
+        }
 
 
         // check to see if it falls within any of the broadcast bands
