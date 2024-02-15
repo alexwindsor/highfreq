@@ -107,9 +107,9 @@ function checkFrequency() {
                    min="100"
                    max="30000"
                    maxlength="5"
-                   class="block border border-black rounded p-1 mt-2 mb-8 w-[180px]"
+                   class="border border-black rounded p-1 mt-2 mb-8 w-[180px]"
                    @keyup="checkFrequency"
-            >
+            > kHz
 
 
             <span v-if="band.bands?.wave" class="mt-8 text-lg">

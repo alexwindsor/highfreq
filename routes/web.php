@@ -72,10 +72,13 @@ Route::delete('/delete_account', [UserController::class, 'destroy'])->middleware
 
 /*
 
-prevent logging the same frequency within 30 minutes / 30 minute block by same user
+prevent logging the same frequency within 30 minutes / 30-minute block by same user
 add log filter for matching with sw-info data
+
 implement headless ui
+
 separate routes between views and api and refactor the Controller / Model pages
+
 colour code the logs page by broadcast / utility, to make it clear which one you are on when adding a log
 don't show utility logs when adding a broadcast and vice versa
 

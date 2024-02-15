@@ -222,7 +222,7 @@ onMounted(() => {
 
     <Pagination v-if="broad.casts.total > 50" :links="broad.casts.links" :filters="broad.querystring" />
 
-    <Link v-if="user && user.id === 1" :href="base_url + 'swiDataRip/rip'" class="mt-8 inline-block rounded border-2 border-red-500 p-2 text-red-500">Update data from short-wave.info</link>
+    <Link v-if="user && user.is_admin" :href="base_url + 'swiDataRip/rip'" class="mt-8 inline-block rounded border-2 border-red-500 p-2 text-red-500">Update data from short-wave.info</link>
 
 </Layout>
 
