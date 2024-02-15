@@ -71,26 +71,30 @@ Route::delete('/delete_account', [UserController::class, 'destroy'])->middleware
 // TO DO :
 
 /*
-shortWaveInfoData:
- - make time displayed live and update data half/hourly
- - click to add log
 
-logs:
- - make group by filter
+prevent logging the same frequency within 30 minutes / 30-minute block by same user
+add log filter for matching with sw-info data
 
-*check everything over that it is mobile friendly
+implement headless ui
 
-***
-LARAVEL:
- - have a look and optimise all the routes, controllers, models (sql statements) etc..
- - unit tests, starting by cutting and pasting tests from the auth template
- - make apis
-***
+separate routes between views and api and refactor the Controller / Model pages
+
+colour code the logs page by broadcast / utility, to make it clear which one you are on when adding a log
+don't show utility logs when adding a broadcast and vice versa
 
 
-bands page !!! have fun...
+doing:
+---
+create crud page for updating utility stations
 
 
+---
+done:
+fix deletion of orphaned broadcast stations / station programmes on sw-info scrape
+update bands page with aeronautical bands and tidy up
+make logs recorded by the second, not by the minute
+take log orders out of filter and into their own dropdown
+make better date displays, maybe dates for humans in the logs, so it is clearer
 */
 
 

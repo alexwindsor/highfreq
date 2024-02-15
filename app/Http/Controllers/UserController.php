@@ -41,7 +41,7 @@ class UserController extends Controller
             'password' => ['required']
           ]);
 
-          if (! auth()->attempt($attributes)) {
+          if (! auth()->attempt($attributes, request('remember') ?? false)) {
             return back()->withErrors(['authentication' => 'Incorrect email or password'])->withInput();
           }
 

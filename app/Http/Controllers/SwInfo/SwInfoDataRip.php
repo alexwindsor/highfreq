@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 
 namespace App\Http\Controllers\SwInfo;
 
@@ -334,23 +334,32 @@ class SwInfoDataRip
     }
 
 
-
     private static function killOrphans() {
 
+        DB::statement('
+            DELETE FROM `station_programmes` where
+            station_id not in (select station_id from sw_info_broadcasts) and
+            station_id not in (select station_id from logs) and
+            id not in (select station_programme_id from logs where station_programme_id is not null)
+        ');
 
-        DB::statement('DELETE FROM `station_programmes` where station_id not in (select id from stations) and id not in (select station_programme_id from logs where station_programme_id is not null)');
+        DB::statement('
+            DELETE FROM `stations` where
+            id not in (select station_id from sw_info_broadcasts) and
+            id not in (select station_id from logs)
+        ');
 
-        DB::statement('DELETE FROM `stations` where id not in (select station_id from sw_info_broadcasts) and id not in (select station_id from logs)');
+        DB::statement('
+            DELETE FROM `languages` where
+            id not in (select language_id from sw_info_broadcasts) and
+            id not in (select language_id from logs) and id > 1
+        ');
 
-        DB::statement('DELETE FROM `languages` where id not in (select language_id from sw_info_broadcasts) and id not in (select language_id from logs) and id > 1');
-
-        DB::statement('DELETE FROM `transmitters` where id not in (select transmitter_id from sw_info_broadcasts)');
+        DB::statement('
+            DELETE FROM `transmitters` where id not in
+            (select transmitter_id from sw_info_broadcasts)
+        ');
     }
-
-
-
-
-
 
 
 
