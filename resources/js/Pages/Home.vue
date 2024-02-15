@@ -35,27 +35,7 @@ function login() {
         </div>
 
         <div v-if="! user" class="mb-5">
-            You need to log in to be able to view the logs page and submit logs:
-
-            <form @submit.prevent="login">
-                <div class="m-auto w-full sm:w-2/3 lg:w-1/3 mt-16">
-                    <div class="mb-3">
-                        Email:
-                        <br>
-                        <input type="email" v-model="form.email" class="block w-full border-2 border-black rounded p-1 text-black">
-                        <div v-if="errors.email" class="text-xs text-red-500">{{ errors.email }}</div>
-                    </div>
-
-                    <div class="mb-3">
-                        Password:
-                        <br>
-                        <input type="password" v-model="form.password" class="block w-full border-2 border-black rounded p-1 text-black">
-                        <div v-if="errors.password" class="text-xs text-red-500">{{ errors.password }}</div>
-                    </div>
-                    <br>
-                    <button class="border-2 border-black rounded p-1 text-black text-2xl" type="submit">Login</button>
-                </div>
-            </form>
+            You need to <Link v-if="! user" class="underline" :href="base_url + 'edit_profile'">log in</Link> to be able to view the logs page and submit logs:
         </div>
 
         <img src="belka-dx.jpg" alt="Belka DX Shortwave Receiver" class="mx-auto my-16 border border-black">

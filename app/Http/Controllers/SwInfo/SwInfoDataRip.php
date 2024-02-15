@@ -333,7 +333,7 @@ class SwInfoDataRip
 
     }
 
-    
+
     private static function killOrphans() {
 
         DB::statement('

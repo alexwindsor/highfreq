@@ -23,7 +23,7 @@ function login() {
     <Head title="HF / login" />
 
 <Layout page="Login">
-    
+
     <div v-if="errors.authentication" class="text-red-500">{{ errors.authentication }}</div>
 
 <form @submit.prevent="login">
@@ -41,8 +41,14 @@ function login() {
             <input type="password" v-model="form.password" class="block w-full border-2 border-black rounded p-1 text-black">
             <div v-if="errors.password" class="text-xs text-red-500">{{ errors.password }}</div>
         </div>
-        <br>
-        <button class="border-2 border-black rounded p-1 text-black text-2xl" type="submit">Login</button>
+
+        <div class="mb-3">
+            <label>
+                <input type="checkbox" v-model="form.remember" class="mr-3 border border-black"> Remember me on this computer ?
+            </label>
+        </div>
+
+        <button class="border-2 border-black rounded p-1 mt-2 text-black text-2xl" type="submit">Login</button>
     </div>
 </form>
 
