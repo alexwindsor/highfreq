@@ -168,8 +168,7 @@ export let logs = reactive({
 
 
     makeQuerystring() {
-
-        return '&station_type=' + this.filters.station_type + '&frequency=' + this.filters.frequency + '&weekday=' + this.filters.weekday + '&time_filter=' + this.filters.time_filter + '&time_range=' + this.filters.time_range + '&half_hour_blocks=' + this.filters.half_hour_blocks + '&time=' + this.filters.time + '&make_time_now=' + this.filters.make_time_now + '&station_id=' + this.filters.station_id + '&station_name=' + this.filters.station_name + '&language_id=' + this.filters.language_id + '&language_name=' + this.filters.language_name + '&quality=' + this.filters.quality + '&commentSearch=' + this.filters.commentSearch + '&log_owners=' + this.filters.log_owners + '&order_by=' + this.filters.order_by + '&group_results=' + this.filters.group_results
+        return '&station_type=' + this.filters.station_type + '&frequency=' + this.filters.frequency + '&weekday=' + this.filters.weekday + '&time_filter=' + this.filters.time_filter + '&time_range=' + this.filters.time_range + '&half_hour_blocks=' + this.filters.half_hour_blocks + '&time=' + this.filters.time + '&make_time_now=' + this.filters.make_time_now + '&station_id=' + this.filters.station_id + '&station_name=' + this.filters.station_name + '&language_id=' + this.filters.language_id + '&language_name=' + this.filters.language_name + '&quality=' + this.filters.quality + '&commentSearch=' + this.filters.commentSearch + '&log_owners=' + this.filters.log_owners + '&order_by=' + this.filters.order_by + '&group_results=' + this.filters.group_results + '&match_swinfo=' + this.filters.match_swinfo + '&antimatch_swinfo=' + this.filters.antimatch_swinfo
     },
 
     updateTimeRange() {

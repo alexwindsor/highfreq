@@ -26,7 +26,6 @@ class LogController extends Controller
     public function index() {
 
         $user = ['id' => auth()->user()->id, 'name' => auth()->user()->name];
-
         $filters = $this->sanitiseFilters();
         $stations = $this->getStations($filters['station_type']);
         $languages = $this->getLanguages($filters['station_type']);
@@ -54,17 +53,17 @@ class LogController extends Controller
             'log_owners' => $filters['log_owners'],
             'order_by' => $filters['order_by'],
             'group_results' => $filters['group_results'],
+            'match_swinfo' => $filters['match_swinfo'],
+            'antimatch_swinfo' => $filters['antimatch_swinfo'],
         ]);
     }
 
     public function getStations($station_type_id) {
-
         return Station::where('station_type_id', $station_type_id)->orderBy('name')->get(['id', 'name']);
     }
 
 
     public function getLanguages($station_type_id) {
-
         return Language::where('station_type_id', $station_type_id)->orderBy('name')->get(['id', 'name']);
     }
 
@@ -75,7 +74,7 @@ class LogController extends Controller
 
         $order = str_replace('-', ' ', $filters['order_by']);
 
-        return Log::applyFilters($filters['log_owners'], $filters['time_filter'], $filters['bottom_time_range'], $filters['top_time_range'], $filters['weekday'], $filters['frequency'], $filters['station_type'], $filters['station_id'], $filters['language_id'], $filters['quality'], $filters['commentSearch'], $order, $filters['group_results']);
+        return Log::applyFilters($filters['log_owners'], $filters['time_filter'], $filters['bottom_time_range'], $filters['top_time_range'], $filters['weekday'], $filters['frequency'], $filters['station_type'], $filters['station_id'], $filters['language_id'], $filters['quality'], $filters['commentSearch'], $order, $filters['group_results'], $filters['match_swinfo'], $filters['antimatch_swinfo']);
 
     }
 
@@ -94,8 +93,6 @@ class LogController extends Controller
 
         if (request('time_filter') === null || request('time_filter') === true || request('time_filter') === 'true') $time_filter = true;
         elseif (request('time_filter') === 'false' || request('time_filter') === false) $time_filter = false;
-
-        // $time = preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/', request('time')) ? request('time') : '';
 
         $time_range = intval(request('time_range')) < 1 || intval(request('time_range')) > 6 ? 1 : intval(request('time_range'));
 
@@ -124,6 +121,12 @@ class LogController extends Controller
         if (request('group_results') === true || request('group_results') === 'true') $group_results = true;
         elseif (request('group_results') === null || request('group_results') === 'false' || request('group_results') === false) $group_results = false;
 
+        if (request('match_swinfo') === true || request('match_swinfo') === 'true' || request('match_swinfo') === null) $match_swinfo = true;
+        elseif (request('match_swinfo') === 'false' || request('match_swinfo') === false) $match_swinfo = false;
+
+        if (request('antimatch_swinfo') === true || request('antimatch_swinfo') === 'true') $antimatch_swinfo = true;
+        elseif (request('antimatch_swinfo') === null || request('antimatch_swinfo') === 'false' || request('antimatch_swinfo') === false) $antimatch_swinfo = false;
+
         return [
             'page' => $page,
             'station_type' => $station_type,
@@ -143,7 +146,9 @@ class LogController extends Controller
             'commentSearch' => $commentSearch,
             'log_owners' => $log_owners,
             'order_by' => $order_by,
-            'group_results' => $group_results
+            'group_results' => $group_results,
+            'match_swinfo' => $match_swinfo,
+            'antimatch_swinfo' => $antimatch_swinfo,
         ];
     }
 

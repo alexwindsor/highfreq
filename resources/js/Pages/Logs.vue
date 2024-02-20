@@ -33,7 +33,9 @@ const props = defineProps({
     commentSearch: String,
     log_owners: Boolean,
     order_by: String,
-    group_results: Boolean
+    group_results: Boolean,
+    match_swinfo: Boolean,
+    antimatch_swinfo: Boolean,
 })
 
 function makeTime() {
@@ -77,7 +79,6 @@ function updateStationsAndLanguages() {
 }
 
 function updateFilters() {
-
     logs.filters.page = props.page
     logs.filters.station_type = props.station_type
     logs.filters.frequency = props.frequency > 100 && props.frequency < 30000 ? props.frequency : null
@@ -97,6 +98,8 @@ function updateFilters() {
     logs.filters.log_owners = props.log_owners
     logs.filters.order_by = props.order_by
     logs.filters.group_results = props.group_results
+    logs.filters.match_swinfo = props.match_swinfo
+    logs.filters.antimatch_swinfo = props.antimatch_swinfo
 }
 
 setInterval(makeTime, 1000)

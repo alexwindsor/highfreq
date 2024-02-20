@@ -74,7 +74,7 @@ onMounted(() => {
 <Layout page="Current Broadcasts" :user="user">
 
     <div class="text-xs sm:text-sm lg:text-base">
-        This data is taken from the <a href="https://short-wave.info" class="underline" target="_blank"><i>amazing</i> short-wave.info</a> website. The data is highly reliable and is updated every couple of months. Many thanks to their hard work, experience and dedication for this data.
+        This data is taken from the <i>amazing</i> <a href="https://short-wave.info" class="underline" target="_blank">short-wave.info</a> website. The data is highly reliable and is updated every couple of months. Many thanks to their hard work, experience and dedication for this data.
     </div>
 
 
