@@ -14,9 +14,8 @@ class Log extends Model
     public $timestamps = false;
     public $guarded = ['id'];
 
-    protected static function applyFilters(bool $log_owners, bool $time_filter, string $bottom_time_range, string $top_time_range, int $weekday, int $frequency, int $station_type, int $station_id, int $language_id, int $quality, string $commentSearch, string $order, bool $group_by)
+    protected static function applyFilters(bool $log_owners, bool $time_filter, string $bottom_time_range, string $top_time_range, int $weekday, int $frequency, int $station_type, int $station_id, int $language_id, int $quality, string $commentSearch, string $order, bool $group_by, bool $match_swinfo, bool $antimatch_swinfo)
     {
-
         $logQuery = (new Log)->newQuery();
 
         if (!$group_by) $logQuery->join('users', 'logs.user_id', '=', 'users.id');
@@ -26,7 +25,10 @@ class Log extends Model
             $logQuery->selectRaw('count(*) as count');
             $logQuery->selectRaw('avg(logs.quality) as quality');
         }
-        elseif (!$group_by) $logQuery->select('logs.id', 'logs.user_id', 'logs.station_id', 'logs.station_programme_id', 'logs.language_id', 'logs.frequency', 'logs.datetime', 'logs.quality', 'logs.comment', 'users.name as username', 'stations.name as station_name', 'stations.station_type_id as station_type_id', 'station_programmes.name as station_programme_name', 'languages.name as language_name');
+
+        if (!$group_by) {
+            $logQuery->select('logs.id', 'logs.user_id', 'logs.station_id', 'logs.station_programme_id', 'logs.language_id', 'logs.frequency', 'logs.datetime', 'logs.quality', 'logs.comment', 'users.name as username', 'stations.name as station_name', 'stations.station_type_id as station_type_id', 'station_programmes.name as station_programme_name', 'languages.name as language_name');
+        }
 
         $logQuery->join('stations', 'logs.station_id', '=', 'stations.id');
         $logQuery->leftJoin('station_programmes', 'logs.station_programme_id', '=', 'station_programmes.id');
@@ -40,8 +42,15 @@ class Log extends Model
         $logQuery->language($language_id);
         $logQuery->quality($quality);
         $logQuery->orderByRaw($order);
-        if (!$group_by) $logQuery->commentSearch($commentSearch);
+
+        if (!$group_by && !empty($commentSearch)) $logQuery->commentSearch($commentSearch);
+
         if ($group_by) $logQuery->groupBy(['logs.station_id', 'stations.name', 'stations.station_type_id', 'logs.station_programme_id', 'station_programmes.name', 'logs.frequency', 'logs.language_id', 'languages.name']);
+
+        if ($match_swinfo || $antimatch_swinfo) {
+            $logQuery->swInfoMatch($match_swinfo, $antimatch_swinfo);
+        }
+
 
         return $logQuery->paginate(20);
     }
@@ -98,7 +107,35 @@ class Log extends Model
     protected function scopeCommentSearch(Builder $query, string $commentSearch): void
     {
         if (strlen($commentSearch) > 0) $query->where('comment', 'LIKE', '%' . $commentSearch . '%');
+    }
 
+    protected function scopeSwInfoMatch(Builder $query, bool $match_swinfo, bool $antimatch_swinfo): void
+    {
+        if ($match_swinfo) $sql = 'in';
+        else if ($antimatch_swinfo) $sql = 'not in';
+
+
+        // 'IF(start_time > end_time, "' . date('H:i:s') . '" BETWEEN `start_time` AND "23:59" OR "' . date('H:i:s') . '" BETWEEN "00:00" AND `end_time`, "' . date('H:i:s') . '" BETWEEN `start_time` AND `end_time`)'
+
+        // WHERE `weekdays` & 8 and IF(start_time > end_time, "22:27:29" BETWEEN `start_time` AND "23:59" OR "22:27:29" BETWEEN "00:00" AND `end_time`, "22:27:29" BETWEEN `start_time` AND `end_time`) and `frequency` = 6020 and `sw_info_broadcasts`.`station_id` = 23 and `sw_info_broadcasts`.`language_id` = 3
+
+        $day = date('N') + 1;
+        $day = $day === 8 ? '1' : $day;
+        $day = pow(2, $day);
+
+        $query->whereRaw('
+            (`logs`.`station_id`, `logs`.`frequency`)
+            ' . $sql . ' (
+            SELECT `sw_info_broadcasts`.`station_id`, `sw_info_broadcasts`.`frequency`
+            FROM `sw_info_broadcasts`
+            WHERE `sw_info_broadcasts`.`weekdays` & ' . $day . ' AND
+                IF(
+                    `sw_info_broadcasts`.`start_time` > `sw_info_broadcasts`.`end_time`,
+                        "' . gmdate('H:i:s') . '" BETWEEN `sw_info_broadcasts`.`start_time` AND "23:59:59" OR
+                        "' . gmdate('H:i:s') . '" BETWEEN "00:00:00" AND `sw_info_broadcasts`.`end_time`,
+                        "' . gmdate('H:i:s') . '" BETWEEN `sw_info_broadcasts`.`start_time` AND `sw_info_broadcasts`.`end_time`
+                )
+            )');
     }
 
 
