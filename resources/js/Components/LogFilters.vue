@@ -22,9 +22,9 @@ function changeTime() {
     <div class="sm:grid sm:grid-cols-2 sm:gap-7 md:gap-10 lg:grid-cols-1 lg:gap-0 border-l border-b border-black p-4 sm:mb-10">
 
         <!-- match with short-wave.info logs -->
-        <div class="mx-auto w-full mb-8 xl:w-5/6">
+        <div class="mx-auto w-full mx-8 xl:w-5/6">
             <label class="bg-gray-300">
-                Show stations that match broadcast listings ?
+                Match broadcast listings ?
                 <input
                     type="checkbox"
                     v-model="logs.filters.match_swinfo"
@@ -37,7 +37,7 @@ function changeTime() {
         <!-- match against short-wave.info logs -->
         <div class="mx-auto w-full mb-8 xl:w-5/6">
             <label class="bg-gray-300">
-                Show stations that don't match broadcast listings ?
+                Anti-match broadcast listings ?
                 <input
                     type="checkbox"
                     v-model="logs.filters.antimatch_swinfo"
