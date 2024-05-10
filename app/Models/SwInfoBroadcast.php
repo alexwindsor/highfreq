@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Scalar\String_;
 
 class SwInfoBroadcast extends Model
 {
     use HasFactory;
     public $timestamps = false;
     public $guarded = ['id'];
-
-
 
     protected function scopeNowTime(Builder $query, bool $ok)
     {
@@ -71,6 +71,20 @@ class SwInfoBroadcast extends Model
         );
     }
 
+
+
+
+
+
+
+
+
+
+
+    public function sw_info_broadcast_update(): BelongsTo
+    {
+        return $this->belongsTo(SwInfoBroadcastUpdate::class);
+    }
 
     public function station(): BelongsTo
     {

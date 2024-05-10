@@ -77,6 +77,9 @@ onMounted(() => {
         This data is taken from the <i>amazing</i> <a href="https://short-wave.info" class="underline" target="_blank">short-wave.info</a> website. The data is highly reliable and is updated every couple of months. Many thanks to their hard work, experience and dedication for this data.
     </div>
 
+    <br>
+
+    Information updated on {{ dateOfData }}
 
     <div class="mt-5 mb-10 sm:grid sm:grid-cols-12 sm:gap-1 md:gap-2 lg:gap-4">
 
@@ -167,6 +170,8 @@ onMounted(() => {
                     <Link class="underline" :href="base_url + 'shortWaveInfoData?frequency=' + swInfoBroadcast.frequency + '&broadcasting_now=false'">{{ swInfoBroadcast.frequency }}</Link>
                     <br>
                     <a :href="'http://websdr.ewi.utwente.nl:8901/?tune=' + swInfoBroadcast.frequency + 'am'" target="_blank" class="text-xs underline">websdr</a>
+                    <br>
+                    {{  }}
                 </div>
 
                 <div class="col-span-2">
@@ -214,9 +219,6 @@ onMounted(() => {
 
     </div>
 
-    <br>
-
-    Information updated on {{ dateOfData }}
 
     <br><br>
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SwInfoBroadcastUpdate;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -15,16 +16,15 @@ use App\Models\Transmitter;
 use App\Models\StationProgramme;
 
 
+
+
 class SwInfoBroadcastController extends Controller
 {
-
 
     public function index() {
 
         $filters = $this->sanitizeFilters();
 
-        $dateOfData = SwInfoDataRip::getServerDateOfData();
-        $dateOfData = substr($dateOfData, 6, 2) . '/' . substr($dateOfData, 4, 2) . '/' . substr($dateOfData, 0, 4);
         $stations = Station::where('station_type_id', 1)->orderBy('name')->get(['id', 'name']);
         $languages = Language::where('station_type_id', 1)->orderBy('name')->get(['id', 'name']);
         $transmitters = Transmitter::orderBy('name')->get(['id', 'name']);
@@ -45,7 +45,7 @@ class SwInfoBroadcastController extends Controller
             'stations' => $stations,
             'languages' => $languages,
             'transmitters' => $transmitters,
-            'dateOfData' => $dateOfData,
+            'dateOfData' => SwInfoBroadcastUpdate::getLatestUpdate('date'),
             'day' => $day,
             'time' => $time,
             'user' => $user,
@@ -57,7 +57,8 @@ class SwInfoBroadcastController extends Controller
 
         $filters = $this->sanitizeFilters();
 
-        return SwInfoBroadcast::join('stations', 'station_id', '=', 'stations.id')
+        return SwInfoBroadcast::where('sw_info_broadcast_updates_id', SwInfoBroadcastUpdate::getLatestUpdate('id'))
+            ->join('stations', 'station_id', '=', 'stations.id')
             ->leftJoin('station_programmes', 'station_programme_id', '=', 'station_programmes.id')
             ->join('languages', 'language_id', '=', 'languages.id')
             ->join('transmitters', 'transmitter_id', '=', 'transmitters.id')
@@ -105,7 +106,8 @@ class SwInfoBroadcastController extends Controller
         $day = $day === 8 ? '1' : $day;
         $day = pow(2, $day);
 
-        return SwInfoBroadcast::with('station', 'station_programme', 'language')
+        return SwInfoBroadcast::where('sw_info_broadcast_updates_id', SwInfoBroadcastUpdate::getLatestUpdate('id'))
+        ->with('station', 'station_programme', 'language')
         ->frequency($frequency)
         ->nowTime(true)
         ->get();

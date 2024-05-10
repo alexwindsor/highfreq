@@ -118,12 +118,15 @@ class Log extends Model
         $day = $day === 8 ? '1' : $day;
         $day = pow(2, $day);
 
+        $swInfoBroadcastUpdate_id = SwInfoBroadcastUpdate::getLatestUpdate('id');
+
         $query->whereRaw('
             (`logs`.`station_id`, `logs`.`language_id`, `logs`.`frequency`)
             ' . $sql . ' (
             SELECT `sw_info_broadcasts`.`station_id`, `sw_info_broadcasts`.`language_id`, `sw_info_broadcasts`.`frequency`
             FROM `sw_info_broadcasts`
-            WHERE `sw_info_broadcasts`.`weekdays` & ' . $day . ' AND
+            WHERE `sw_info_broadcasts`.`sw_info_broadcast_updates_id` = ' . $swInfoBroadcastUpdate_id . ' 
+            AND `sw_info_broadcasts`.`weekdays` & ' . $day . ' AND 
             IF(
                 `sw_info_broadcasts`.`start_time` > `sw_info_broadcasts`.`end_time`,
                     "' . gmdate('H:i:s') . '" BETWEEN `sw_info_broadcasts`.`start_time` AND "23:59:59" OR
