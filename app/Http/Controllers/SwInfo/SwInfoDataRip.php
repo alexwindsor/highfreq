@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\SwInfo;
 
+use App\Models\SwInfoBroadcastUpdate;
 use Illuminate\Support\Facades\DB;
 use App\Models\SwInfoBroadcast;
 use App\Models\Station;
@@ -44,39 +45,26 @@ class SwInfoDataRip
         'WORLD',
     ];
 
-
+    public static $date_on_server;
 
 
     public static function shortWaveInfoGet() {
 
         // exit if the date on short-wave.info is the same as the date we have on the server
-        $date_on_server = self::getServerDateOfData();
+        self::$date_on_server = str_replace('-', '', SwInfoBroadcastUpdate::getLatestUpdate('date'));
         $date_on_swinfo = self::getSwInfoDateOfData();
 
-        $date_message = 'Data on server = ' . $date_on_server . ' and data on short-wave.info = ' . $date_on_swinfo;
+        $date_message = 'Data on server = ' . self::$date_on_server . ' and data on short-wave.info = ' . $date_on_swinfo;
 
 
-        if (intval($date_on_swinfo) <= intval($date_on_server)) return $date_message . '<br><br>No scrape performed...';
+        if (intval($date_on_swinfo) <= intval(self::$date_on_server)) return $date_message . '<br><br>No scrape performed...';
 
-        // truncate the broadcasts table
-        SwInfoBroadcast::truncate();
+        $update = SwInfoBroadcastUpdate::create(['date' => $date_on_swinfo]);
 
         // loop through the stations insert new ones into the database and parse each page of data
-        self::parseStationPageData();
-
-        // save the date of the latest import into the file
-        file_put_contents('swinfo/date', $date_on_swinfo);
-
-        // delete any stations or languages that have been orphaned (and aren't linked to any user logs)
-        self::killOrphans();
+        self::parseStationPageData($update->id);
 
         return $date_message . '<br><br>completed';
-    }
-
-
-    public static function getServerDateOfData() {
-        return file_get_contents('swinfo/date');
-        // return 0;
     }
 
 
@@ -96,7 +84,7 @@ class SwInfoDataRip
     }
 
 
-    private static function parseStationPageData() {
+    private static function parseStationPageData($sw_info_broadcast_updates_id) {
 
         sleep(3); // gap between requests to short-wave.info
 
@@ -324,41 +312,14 @@ class SwInfoDataRip
                 'end_time' => $row['end'] . ':00',
                 'weekdays' => $row['days'],
                 'strength' => $row['power'],
-                'azimuth' => $row['azimuth']
+                'azimuth' => $row['azimuth'],
+                'sw_info_broadcast_updates_id' => $sw_info_broadcast_updates_id
             ]);
 
         }
 
         return true;
 
-    }
-
-
-    private static function killOrphans() {
-
-        DB::statement('
-            DELETE FROM `station_programmes` where
-            station_id not in (select station_id from sw_info_broadcasts) and
-            station_id not in (select station_id from logs) and
-            id not in (select station_programme_id from logs where station_programme_id is not null)
-        ');
-
-        DB::statement('
-            DELETE FROM `stations` where
-            id not in (select station_id from sw_info_broadcasts) and
-            id not in (select station_id from logs)
-        ');
-
-        DB::statement('
-            DELETE FROM `languages` where
-            id not in (select language_id from sw_info_broadcasts) and
-            id not in (select language_id from logs) and id > 1
-        ');
-
-        DB::statement('
-            DELETE FROM `transmitters` where id not in
-            (select transmitter_id from sw_info_broadcasts)
-        ');
     }
 
 
